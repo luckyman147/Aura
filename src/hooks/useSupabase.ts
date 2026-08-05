@@ -161,41 +161,18 @@ export async function createSession(
 export async function joinSession(code: string, partnerId: string) {
   const normalizedCode = code.toUpperCase().trim()
 
-  // First, fetch the session to check if it exists and is joinable
-  const { data: existing, error: fetchError } = await supabase
-    .from('sessions')
-    .select('*')
-    .eq('code', normalizedCode)
-    .single()
-
-  if (fetchError || !existing) {
-    return { data: null, error: { message: 'Session not found' } }
-  }
-
-  if (existing.partner_id) {
-    return { data: null, error: { message: 'Session is already full' } }
-  }
-
-  if (existing.status !== 'waiting') {
-    return { data: null, error: { message: 'Session is no longer accepting players' } }
-  }
-
-  // Now update the session
-  const { data, error: updateError } = await supabase
-    .from('sessions')
-    .update({
-      partner_id: partnerId,
-      status: 'active',
+  const { data, error } = await supabase
+    .rpc('join_session', {
+      p_code: normalizedCode,
+      p_partner_id: partnerId,
     })
-    .eq('id', existing.id)
-    .select()
     .single()
 
-  if (updateError) {
-    return { data: null, error: { message: 'Failed to join session' } }
+  if (error) {
+    return { data: null, error: { message: error.message || 'Session not found or already full' } }
   }
 
-  return { data, error: null }
+  return { data: data as Session, error: null }
 }
 
 export function getSessionInviteUrl(code: string): string {
