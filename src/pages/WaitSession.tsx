@@ -13,23 +13,24 @@ export function WaitSession() {
   const [copied, setCopied] = useState(false)
   const [shareMethod, setShareMethod] = useState<'qr' | 'link'>('qr')
   const [partnerJoined, setPartnerJoined] = useState(false)
-  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const didRedirect = useRef(false)
 
   const inviteUrl = useMemo(() => code ? getSessionInviteUrl(code) : '', [code])
 
   useEffect(() => {
-    if (session?.status === 'active' && !partnerJoined) {
+    if (session?.status === 'active' && !partnerJoined && !didRedirect.current) {
+      didRedirect.current = true
       setPartnerJoined(true)
       localStorage.setItem('aura_session_code', session.code)
       localStorage.setItem('aura_session_id', session.id)
       localStorage.setItem('aura_language', session.language)
       localStorage.setItem('aura_player_role', 'host')
-      redirectTimer.current = setTimeout(() => {
-        navigate('/session/quiz')
-      }, 1500)
-      return () => { if (redirectTimer.current) clearTimeout(redirectTimer.current) }
+      if (session.categories) {
+        localStorage.setItem('aura_session_categories', JSON.stringify(session.categories))
+      }
+      setTimeout(() => navigate('/session/quiz'), 1500)
     }
-  }, [session?.status, partnerJoined, session, navigate])
+  }, [session?.status])
 
   if (loading) {
     return (

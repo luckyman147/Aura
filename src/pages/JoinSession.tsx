@@ -47,6 +47,9 @@ export function JoinSession() {
     localStorage.setItem('aura_session_id', data.id)
     localStorage.setItem('aura_language', data.language)
     localStorage.setItem('aura_player_role', 'partner')
+    if (data.categories) {
+      localStorage.setItem('aura_session_categories', JSON.stringify(data.categories))
+    }
     navigate('/session/quiz')
     setJoining(false)
   }

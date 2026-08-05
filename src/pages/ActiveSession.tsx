@@ -45,7 +45,14 @@ export function ActiveSession() {
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
   const sessionCode = getSessionCode()
-  const categories: Category[] = ['communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage']
+
+  const categories: Category[] = (() => {
+    const stored = localStorage.getItem('aura_session_categories')
+    if (stored) {
+      try { return JSON.parse(stored) } catch { /* ignore */ }
+    }
+    return ['communication', 'values', 'lifestyle']
+  })()
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
   const { session } = useSession(sessionCode || null)
