@@ -22,7 +22,7 @@ export function useSession(code: string | null) {
       .select('*')
       .eq('code', code.toUpperCase())
       .single()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
         setSession(data)
         setLoading(false)
       })
@@ -139,14 +139,14 @@ export function useResults(sessionId: string | null) {
   return { result, loading }
 }
 
-export function createSession(
+export async function createSession(
   mode: 'online' | 'realtime',
   language: AppLanguage,
   categories: Category[],
   hostId: string,
 ) {
   const code = generateCode()
-  return supabase.from('sessions').insert({
+  const { data, error } = await supabase.from('sessions').insert({
     code,
     mode,
     language,
@@ -154,17 +154,53 @@ export function createSession(
     host_id: hostId,
     status: 'waiting',
   }).select().single()
+
+  return { data, error }
 }
 
-export function joinSession(code: string, partnerId: string) {
-  return supabase
+export async function joinSession(code: string, partnerId: string) {
+  const normalizedCode = code.toUpperCase().trim()
+
+  // First, fetch the session to check if it exists and is joinable
+  const { data: existing, error: fetchError } = await supabase
     .from('sessions')
-    .update({ partner_id: partnerId, status: 'active' })
-    .eq('code', code.toUpperCase())
-    .eq('status', 'waiting')
-    .is('partner_id', null)
+    .select('*')
+    .eq('code', normalizedCode)
+    .single()
+
+  if (fetchError || !existing) {
+    return { data: null, error: { message: 'Session not found' } }
+  }
+
+  if (existing.partner_id) {
+    return { data: null, error: { message: 'Session is already full' } }
+  }
+
+  if (existing.status !== 'waiting') {
+    return { data: null, error: { message: 'Session is no longer accepting players' } }
+  }
+
+  // Now update the session
+  const { data, error: updateError } = await supabase
+    .from('sessions')
+    .update({
+      partner_id: partnerId,
+      status: 'active',
+    })
+    .eq('id', existing.id)
     .select()
     .single()
+
+  if (updateError) {
+    return { data: null, error: { message: 'Failed to join session' } }
+  }
+
+  return { data, error: null }
+}
+
+export function getSessionInviteUrl(code: string): string {
+  const base = typeof window !== 'undefined' ? window.location.origin : 'https://aura-app.netlify.app'
+  return `${base}/session/join?code=${code}`
 }
 
 export function computeResults(sessionId: string) {

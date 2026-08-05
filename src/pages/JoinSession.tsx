@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { joinSession } from '@/hooks/useSupabase'
@@ -16,20 +16,29 @@ function getOrCreatePlayerId(): string {
 
 export function JoinSession() {
   const navigate = useNavigate()
-  const [code, setCode] = useState('')
+  const [searchParams] = useSearchParams()
+  const [code, setCode] = useState(searchParams.get('code') ?? '')
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
 
-  const handleJoin = async () => {
-    if (code.length < 6 || joining) return
+  // Auto-join if code is in URL
+  useEffect(() => {
+    const urlCode = searchParams.get('code')
+    if (urlCode && urlCode.length === 6) {
+      handleJoinWithCode(urlCode)
+    }
+  }, [])
+
+  const handleJoinWithCode = async (joinCode: string) => {
+    if (joining) return
     setJoining(true)
     setError('')
 
     const playerId = getOrCreatePlayerId()
-    const { data, error: joinError } = await joinSession(code.toUpperCase(), playerId)
+    const { data, error: joinError } = await joinSession(joinCode, playerId)
 
     if (joinError || !data) {
-      setError('Invalid code or session already full')
+      setError(joinError?.message ?? 'Failed to join session')
       setJoining(false)
       return
     }
@@ -40,6 +49,17 @@ export function JoinSession() {
     localStorage.setItem('aura_player_role', 'partner')
     navigate('/session/quiz')
     setJoining(false)
+  }
+
+  const handleJoin = async () => {
+    if (code.length < 6 || joining) return
+    await handleJoinWithCode(code)
+  }
+
+  const handleCodeChange = (value: string) => {
+    const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)
+    setCode(cleaned)
+    setError('')
   }
 
   return (
@@ -63,7 +83,7 @@ export function JoinSession() {
           </div>
           <h1 className="text-2xl font-bold text-on-background mb-2">Join Partner</h1>
           <p className="text-sm text-on-surface-variant">
-            Enter the 6-digit code from your partner's screen.
+            Enter the 6-digit code or tap a shared link.
           </p>
         </div>
 
@@ -71,7 +91,7 @@ export function JoinSession() {
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6))}
+            onChange={(e) => handleCodeChange(e.target.value)}
             placeholder="------"
             maxLength={6}
             autoFocus
@@ -90,7 +110,7 @@ export function JoinSession() {
         </div>
 
         {error && (
-          <div className="bg-error-container/30 text-on-error-container text-sm px-4 py-2.5 rounded-xl mb-4 font-medium text-center">
+          <div className="bg-error-container/30 text-on-error-container text-sm px-4 py-2.5 rounded-xl mb-4 font-medium text-center max-w-xs">
             {error}
           </div>
         )}

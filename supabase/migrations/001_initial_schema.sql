@@ -104,6 +104,7 @@ create policy "Sessions are creatable" on sessions
 -- Sessions: host or partner can update
 create policy "Session members can update" on sessions
   for update using (
+    status = 'waiting' or
     auth.uid()::text = host_id::text or
     auth.uid()::text = partner_id::text
   );
