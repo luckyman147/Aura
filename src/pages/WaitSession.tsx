@@ -2,8 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSession, getSessionInviteUrl } from '@/hooks/useSupabase'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { Copy, X, Loader2, Share2, QrCode, Link2 } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { Copy, X, Loader2, Share2, QrCode, Link2, UserCheck } from 'lucide-react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 
 export function WaitSession() {
@@ -12,8 +12,24 @@ export function WaitSession() {
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
   const [shareMethod, setShareMethod] = useState<'qr' | 'link'>('qr')
+  const [partnerJoined, setPartnerJoined] = useState(false)
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const inviteUrl = useMemo(() => code ? getSessionInviteUrl(code) : '', [code])
+
+  useEffect(() => {
+    if (session?.status === 'active' && !partnerJoined) {
+      setPartnerJoined(true)
+      localStorage.setItem('aura_session_code', session.code)
+      localStorage.setItem('aura_session_id', session.id)
+      localStorage.setItem('aura_language', session.language)
+      localStorage.setItem('aura_player_role', 'host')
+      redirectTimer.current = setTimeout(() => {
+        navigate('/session/quiz')
+      }, 1500)
+      return () => { if (redirectTimer.current) clearTimeout(redirectTimer.current) }
+    }
+  }, [session?.status, partnerJoined, session, navigate])
 
   if (loading) {
     return (
@@ -24,12 +40,22 @@ export function WaitSession() {
     )
   }
 
-  if (session?.status === 'active') {
-    localStorage.setItem('aura_session_code', session.code)
-    localStorage.setItem('aura_session_id', session.id)
-    localStorage.setItem('aura_language', session.language)
-    navigate('/session/quiz')
-    return null
+  if (partnerJoined) {
+    return (
+      <div className="min-h-dvh bg-background flex flex-col items-center justify-center px-6">
+        <Header />
+        <div className="flex flex-col items-center gap-4 animate-in fade-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-secondary-container/30 rounded-full flex items-center justify-center">
+            <UserCheck className="w-10 h-10 text-secondary" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-on-surface mb-2">Partner Joined!</h1>
+            <p className="text-sm text-on-surface-variant">Starting quiz together...</p>
+          </div>
+          <Loader2 className="w-6 h-6 text-primary animate-spin mt-2" />
+        </div>
+      </div>
+    )
   }
 
   const handleCopy = () => {
