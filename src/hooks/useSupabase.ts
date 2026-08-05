@@ -47,9 +47,9 @@ export function useSession(code: string | null) {
     return () => { supabase.removeChannel(channel) }
   }, [code])
 
-  // Polling fallback — aggressive 1s poll while waiting
+  // Always poll — covers Realtime not being enabled + SECURITY DEFINER
   useEffect(() => {
-    if (!code || !session || session.status !== 'waiting') return
+    if (!code) return
     let stopped = false
     const interval = setInterval(async () => {
       if (stopped) return
@@ -58,14 +58,23 @@ export function useSession(code: string | null) {
         .select('*')
         .eq('code', code.toUpperCase())
         .single()
-      if (data && data.status !== 'waiting') {
-        stopped = true
-        clearInterval(interval)
-        setSession(data)
-      }
+      if (!data || stopped) return
+      setSession((prev) => {
+        // Only update if something actually changed
+        if (!prev) return data
+        if (
+          prev.current_question_index !== data.current_question_index ||
+          prev.partner_active !== data.partner_active ||
+          prev.status !== data.status ||
+          prev.partner_id !== data.partner_id
+        ) {
+          return data
+        }
+        return prev
+      })
     }, 1000)
     return () => { stopped = true; clearInterval(interval) }
-  }, [code, session?.status])
+  }, [code])
 
   return { session, loading }
 }
