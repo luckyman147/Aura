@@ -47,21 +47,24 @@ export function useSession(code: string | null) {
     return () => { supabase.removeChannel(channel) }
   }, [code])
 
-  // Polling fallback — fast 1s poll while waiting for partner
+  // Polling fallback — aggressive 1s poll while waiting
   useEffect(() => {
     if (!code || !session || session.status !== 'waiting') return
+    let stopped = false
     const interval = setInterval(async () => {
+      if (stopped) return
       const { data } = await supabase
         .from('sessions')
         .select('*')
         .eq('code', code.toUpperCase())
         .single()
       if (data && data.status !== 'waiting') {
-        setSession(data)
+        stopped = true
         clearInterval(interval)
+        setSession(data)
       }
     }, 1000)
-    return () => clearInterval(interval)
+    return () => { stopped = true; clearInterval(interval) }
   }, [code, session?.status])
 
   return { session, loading }
@@ -181,34 +184,26 @@ export async function createSession(
 export async function joinSession(code: string, partnerId: string) {
   const normalizedCode = code.toUpperCase().trim()
 
-  // Step 1: Fetch the session (client-side read via RLS)
-  const { data: session, error: fetchError } = await supabase
-    .from('sessions')
-    .select('*')
-    .eq('code', normalizedCode)
+  // Step 1: Atomic join via SECURITY DEFINER (safe, prevents race conditions)
+  const { data, error } = await supabase
+    .rpc('join_session', {
+      p_code: normalizedCode,
+      p_partner_id: partnerId,
+    })
     .single()
 
-  if (fetchError || !session) {
-    return { data: null, error: { message: 'Session not found' } }
+  if (error || !data) {
+    return { data: null, error: { message: error?.message || 'Session not found or already full' } }
   }
 
-  if (session.status !== 'waiting' || session.partner_id) {
-    return { data: null, error: { message: 'Session is full or already started' } }
-  }
-
-  // Step 2: Update directly via client (fires Realtime!)
-  const { data: updated, error: updateError } = await supabase
+  // Step 2: Touch the row via anon client to FIRE Realtime for the host
+  // SECURITY DEFINER updates don't fire Realtime, but a client-side update does
+  await supabase
     .from('sessions')
-    .update({ partner_id: partnerId, status: 'active' })
-    .eq('id', session.id)
-    .select()
-    .single()
+    .update({ updated_at: new Date().toISOString() })
+    .eq('id', (data as Session).id)
 
-  if (updateError) {
-    return { data: null, error: { message: 'Failed to join session' } }
-  }
-
-  return { data: updated as Session, error: null }
+  return { data: data as Session, error: null }
 }
 
 export function getSessionInviteUrl(code: string): string {
