@@ -23,18 +23,20 @@ export function useSession(code: string | null) {
       .select('*')
       .eq('code', code.toUpperCase())
       .single()
-      .then(({ data, error }) => {
+      .then(({ data }) => {
         setSession(data)
         setLoading(false)
       })
   }, [code])
 
+  // Realtime subscription with unique channel name
   useEffect(() => {
     if (!code) return
+    const channelName = `session:${code}:${Math.random().toString(36).slice(2)}`
     const channel = supabase
-      .channel(`session:${code}`)
+      .channel(channelName)
       .on('postgres_changes', {
-        event: '*',
+        event: 'UPDATE',
         schema: 'public',
         table: 'sessions',
         filter: `code=eq.${code.toUpperCase()}`,
@@ -44,6 +46,23 @@ export function useSession(code: string | null) {
       .subscribe()
     return () => { supabase.removeChannel(channel) }
   }, [code])
+
+  // Polling fallback — covers SECURITY DEFINER + connection issues
+  useEffect(() => {
+    if (!code || !session || session.status !== 'waiting') return
+    const interval = setInterval(async () => {
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('code', code.toUpperCase())
+        .single()
+      if (data && data.status !== 'waiting') {
+        setSession(data)
+        clearInterval(interval)
+      }
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [code, session?.status])
 
   return { session, loading }
 }
@@ -89,8 +108,8 @@ export function useAnswers(sessionId: string | null, playerId: string | null) {
 
   useEffect(() => {
     if (!sessionId) return
-    const channel = supabase
-      .channel(`answers:${sessionId}`)
+    const ansChannel = supabase
+      .channel(`answers:${sessionId}:${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -100,7 +119,7 @@ export function useAnswers(sessionId: string | null, playerId: string | null) {
         setAnswers((prev) => [...prev, payload.new as Answer])
       })
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    return () => { supabase.removeChannel(ansChannel) }
   }, [sessionId])
 
   const submitAnswer = useCallback(async (
@@ -201,8 +220,8 @@ export function useMessages(sessionId: string | null) {
 
   useEffect(() => {
     if (!sessionId) return
-    const channel = supabase
-      .channel(`messages:${sessionId}`)
+    const msgChannel = supabase
+      .channel(`messages:${sessionId}:${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -212,7 +231,7 @@ export function useMessages(sessionId: string | null) {
         setMessages((prev) => [...prev, payload.new as Message])
       })
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+    return () => { supabase.removeChannel(msgChannel) }
   }, [sessionId])
 
   const sendMessage = useCallback(async (senderId: string, text: string) => {
