@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { Heart, ArrowRight, Users } from 'lucide-react'
+import { ArrowRight, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 function getOrCreatePlayerId(): string {
@@ -31,10 +31,11 @@ export function Home() {
 
       <main className="flex-1 flex flex-col items-center justify-center relative z-10 px-6 py-8 w-full max-w-lg mx-auto">
         <div className="text-center mb-10 w-full animate-float">
-          <div className="w-28 h-28 mx-auto mb-5 rounded-full glass-panel shadow-soft flex items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500" />
-            <Heart className="w-14 h-14 text-primary fill-primary/20" strokeWidth={1.5} />
-          </div>
+          <img
+            src="/logo.png"
+            alt="SoulSync"
+            className="w-36 h-36 mx-auto mb-4 drop-shadow-lg"
+          />
           <h2 className="text-4xl font-bold text-on-surface mb-3 tracking-tight">SoulSync</h2>
           <p className="text-base text-on-surface-variant max-w-xs mx-auto leading-relaxed">
             Discover deeper connection through meaningful conversation.
@@ -46,7 +47,6 @@ export function Home() {
             onClick={() => navigate('/session/new')}
             className="group w-full h-14 bg-primary text-on-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 shadow-soft hover:shadow-[0_8px_30px_rgba(174,47,52,0.25)] active:scale-[0.98] transition-all duration-200"
           >
-            <Heart className="w-5 h-5 fill-current" />
             Start Session
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
