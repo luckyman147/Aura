@@ -1,0 +1,107 @@
+{
+  "section": "marriage",
+  "subjects": [
+    {
+      "id": "commitment",
+      "name": "Commitment",
+      "questions": [
+        {
+          "id": "marry-commit-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you believe marriage is necessary for a committed relationship?",
+            "fr": "Pensez-vous que le mariage est nécessaire pour une relation engagée ?",
+            "ar": "هل تعتقد أن الزواج ضروري للعلاقة الملتزمة؟"
+          }
+        },
+        {
+          "id": "marry-commit-02",
+          "depth": "light",
+          "content": {
+            "en": "What does commitment mean to you beyond being together?",
+            "fr": "Que signifie l'engagement pour vous au-delà d'être ensemble ?",
+            "ar": "ماذا يعني الالتزام بالنسبة لك بخلاف أن تكونا معاً؟"
+          }
+        },
+        {
+          "id": "marry-commit-03",
+          "depth": "medium",
+          "content": {
+            "en": "When do you feel most committed to our relationship?",
+            "fr": "Quand vous sentez-vous le plus engagé dans notre relation ?",
+            "ar": "متى تشعر بالالتزام بعلاقتنا أكثر؟"
+          }
+        },
+        {
+          "id": "marry-commit-04",
+          "depth": "medium",
+          "content": {
+            "en": "What would be unforgivable in a relationship for you?",
+            "fr": "Qu'est-ce qui serait impardonnable dans une relation pour vous ?",
+            "ar": "ما هو الشيء غير المقبول في علاقة بالنسبة لك؟"
+          }
+        },
+        {
+          "id": "marry-commit-05",
+          "depth": "deep",
+          "content": {
+            "en": "Are we in this relationship for the long term, or just seeing where it goes?",
+            "fr": "Sommes-nous dans cette relation pour le long terme, ou on voit où ça nous mène ?",
+            "ar": "هل نحن في هذه العلاقة للمدى الطويل، أم نرى إلى أين نصل؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "roles-expectations",
+      "name": "Roles & Expectations",
+      "questions": [
+        {
+          "id": "marry-role-01",
+          "depth": "light",
+          "content": {
+            "en": "How should household chores be divided between us?",
+            "fr": "Comment les tâches ménagères devraient-elles être divisées entre nous ?",
+            "ar": "كيف يجب تقسيم الأعمال المنزلية بيننا؟"
+          }
+        },
+        {
+          "id": "marry-role-02",
+          "depth": "light",
+          "content": {
+            "en": "Should one partner stay home with the children while the other works?",
+            "fr": "Un partenaire devrait-il rester à la maison avec les enfants pendant que l'autre travaille ?",
+            "ar": "هل يجب أن يبقى أحد الشريكين في المنزل مع الأطفال بينما الآخر يعمل؟"
+          }
+        },
+        {
+          "id": "marry-role-03",
+          "depth": "medium",
+          "content": {
+            "en": "How do we balance both careers when children arrive?",
+            "fr": "Comment équilibrer les deux carrières quand les enfants arrivent ?",
+            "ar": "كيف نوازن بين المهنتين عند وصول الأطفال؟"
+          }
+        },
+        {
+          "id": "marry-role-04",
+          "depth": "medium",
+          "content": {
+            "en": "Who tracks the bills, due dates, and subscriptions?",
+            "fr": "Qui suit les factures, les dates d'échéance et les abonnements ?",
+            "ar": "من يتتبع الفواتير والمواعيد النهائية والاشتراكات؟"
+          }
+        },
+        {
+          "id": "marry-role-05",
+          "depth": "deep",
+          "content": {
+            "en": "What are your expectations for how I support your career, and vice versa?",
+            "fr": "Quelles sont vos attentes quant à la façon dont je soutiens votre carrière, et vice versa ?",
+            "ar": "ما هي توقعاتك لكيفية دعمي ل Müslümankarirك، والعكس صحيح؟"
+          }
+        }
+      ]
+    }
+  ]
+}

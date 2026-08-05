@@ -1,0 +1,107 @@
+{
+  "section": "values",
+  "subjects": [
+    {
+      "id": "religion-spirituality",
+      "name": "Religion & Spirituality",
+      "questions": [
+        {
+          "id": "val-religion-01",
+          "depth": "light",
+          "content": {
+            "en": "How important is religion or spirituality in your life?",
+            "fr": "Quelle importance la religion ou la spiritualité a-t-elle dans votre vie ?",
+            "ar": "ما هي أهمية الدين أو الروحانية في حياتك؟"
+          }
+        },
+        {
+          "id": "val-religion-02",
+          "depth": "light",
+          "content": {
+            "en": "Is it important that your partner shares your religious beliefs?",
+            "fr": "Est-il important que votre partenaire partage vos croyances religieuses ?",
+            "ar": "هل من المهم أن يشاركك شريكي معتقداتك الدينية؟"
+          }
+        },
+        {
+          "id": "val-religion-03",
+          "depth": "medium",
+          "content": {
+            "en": "How do we raise our children when it comes to religion or faith?",
+            "fr": "Comment élevons-nous nos enfants en matière de religion ou de foi ?",
+            "ar": "كيف نربي أطفالنا عندما يتعلق الأمر بالدين أو الإيمان؟"
+          }
+        },
+        {
+          "id": "val-religion-04",
+          "depth": "medium",
+          "content": {
+            "en": "Can you respect your partner's beliefs even if they differ from yours?",
+            "fr": "Pouvez-vous respecter les croyances de votre partenaire même si elles diffèrent des vôtres ?",
+            "ar": "هل يمكنك احترام معتقدات شريكك حتى لو اختلفت عن معتقداتك؟"
+          }
+        },
+        {
+          "id": "val-religion-05",
+          "depth": "deep",
+          "content": {
+            "en": "Would it affect our relationship if your partner lost their faith?",
+            "fr": "Cela affecterait-il notre relation si votre partenaire perdait sa foi ?",
+            "ar": "هل سيؤثر ذلك على علاقتنا إذا فقد شريكك إيمانه؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "life-goals",
+      "name": "Life Goals",
+      "questions": [
+        {
+          "id": "val-goals-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you want to live in a big city or a small town?",
+            "fr": "Voulez-vous vivre dans une grande ville ou une petite ville ?",
+            "ar": "هل تريد العيش في مدينة كبيرة أم بلدة صغيرة؟"
+          }
+        },
+        {
+          "id": "val-goals-02",
+          "depth": "light",
+          "content": {
+            "en": "What's on your bucket list — things you want to do before you die?",
+            "fr": "Qu'y a-t-il sur votre liste de souhaits — choses que vous voulez faire avant de mourir ?",
+            "ar": "ما هو في قائمة أمنياتك — أشياء تريد فعلها قبل الموت؟"
+          }
+        },
+        {
+          "id": "val-goals-03",
+          "depth": "medium",
+          "content": {
+            "en": "Would you rather have a simple life or chase wealth and success?",
+            "fr": "Préféreriez-vous une vie simple ou poursuivre la richesse et le succès ?",
+            "ar": "هل تفضل حياة بسيطة أم السعي وراء الثروة والنجاح؟"
+          }
+        },
+        {
+          "id": "val-goals-04",
+          "depth": "medium",
+          "content": {
+            "en": "Where do you see us living in 10 years?",
+            "fr": "Où vous nous voyez vivre dans 10 ans ?",
+            "ar": "أين ترانا نعيش بعد 10 سنوات؟"
+          }
+        },
+        {
+          "id": "val-goals-05",
+          "depth": "deep",
+          "content": {
+            "en": "What does 'a good life' mean to you — stability, adventure, achievement, or something else?",
+            "fr": "Que signifie 'une bonne vie' pour vous — stabilité, aventure, accomplissement ou autre chose ?",
+            "ar": "ماذا تعني 'الحياة الجيدة' بالنسبة لك — الاستقرار، المغامرة، الإنجاز، أو شيء آخر؟"
+          }
+        }
+      ]
+    }
+  ]
+}

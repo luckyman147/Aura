@@ -1,0 +1,107 @@
+{
+  "section": "intimacy",
+  "subjects": [
+    {
+      "id": "physical-affection",
+      "name": "Physical Affection",
+      "questions": [
+        {
+          "id": "intim-phys-01",
+          "depth": "light",
+          "content": {
+            "en": "How important is physical affection (hugs, kisses, cuddling) to you?",
+            "fr": "Quelle importance l'affection physique (câlins, baisers, câlin) a-t-elle pour vous ?",
+            "ar": "ما هي أهمية العاطفة الجسدية (عناق، قبلات، تدلل) بالنسبة لك؟"
+          }
+        },
+        {
+          "id": "intim-phys-02",
+          "depth": "light",
+          "content": {
+            "en": "How do you feel about public displays of affection?",
+            "fr": "Que pensez-vous des démonstrations publiques d'affection ?",
+            "ar": "ماذا تعتقد حول مظاهر الحب في الأماكن العامة؟"
+          }
+        },
+        {
+          "id": "intim-phys-03",
+          "depth": "medium",
+          "content": {
+            "en": "How has your physical intimacy changed since we got together?",
+            "fr": "Comment votre intimité physique a-t-elle changé depuis que nous sommes ensemble ?",
+            "ar": "كيف تغيرت علاقتنا الجسدية منذ أن أصبحنا معاً؟"
+          }
+        },
+        {
+          "id": "intim-phys-04",
+          "depth": "medium",
+          "content": {
+            "en": "Do you feel loved when I show physical affection?",
+            "fr": "Vous sentez-vous aimé quand je montre de l'affection physique ?",
+            "ar": "هل تشعر بالحب عندما أظهر العاطفة الجسدية؟"
+          }
+        },
+        {
+          "id": "intim-phys-05",
+          "depth": "deep",
+          "content": {
+            "en": "If our physical intimacy declined, would you feel rejected?",
+            "fr": "Si notre intimité physique diminuait, vous sentiriez-vous rejeté ?",
+            "ar": "إذا انخفضت علاقتنا الجسدية، هل ستشعر بالرفض؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "quality-time",
+      "name": "Quality Time",
+      "questions": [
+        {
+          "id": "intim-time-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you enjoy just hanging out with me, even when we're not doing anything special?",
+            "fr": "Aimez-vous juste traîner avec moi, même quand nous ne faisons rien de spécial ?",
+            "ar": "هل تستمتع بقضاء الوقت معي حتى لو لم نفعل شيئاً مميزاً؟"
+          }
+        },
+        {
+          "id": "intim-time-02",
+          "depth": "light",
+          "content": {
+            "en": "How often should we have date nights?",
+            "fr": "À quelle fréquence devrions-nous avoir des soirées en couple ?",
+            "ar": "كم مرة يجب أن نقضي ليالي مواعدة؟"
+          }
+        },
+        {
+          "id": "intim-time-03",
+          "depth": "medium",
+          "content": {
+            "en": "Do you need more alone time than I do?",
+            "fr": "Avez-vous besoin de plus de temps seul que moi ?",
+            "ar": "هل تحتاج إلى وقت وحدي أكثر مني؟"
+          }
+        },
+        {
+          "id": "intim-time-04",
+          "depth": "medium",
+          "content": {
+            "en": "What's your favorite thing to do together?",
+            "fr": "Quelle est votre activité préférée à faire ensemble ?",
+            "ar": "ما هو نشاطك المفضل للقيام به معاً؟"
+          }
+        },
+        {
+          "id": "intim-time-05",
+          "depth": "deep",
+          "content": {
+            "en": "If we stopped doing things together, would our relationship suffer?",
+            "fr": "Si nous arrêtions de faire des choses ensemble, notre relation en souffrirait-elle ?",
+            "ar": "إذا توقفنا عن القيام بأشياء معاً، هل ستتأثر علاقتنا؟"
+          }
+        }
+      ]
+    }
+  ]
+}

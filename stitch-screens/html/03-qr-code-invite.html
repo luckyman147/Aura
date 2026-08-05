@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Aura - Link Device</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#543f83",
+                        "on-secondary-fixed-variant": "#4f3a7f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-fixed-variant": "#4c4733",
+                        "surface-variant": "#e4e2e1",
+                        "on-surface-variant": "#584140",
+                        "on-primary-container": "#6d0010",
+                        "secondary-fixed": "#eaddff",
+                        "secondary": "#675298",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-fixed": "#ebe2c8",
+                        "on-tertiary-container": "#373321",
+                        "secondary-container": "#c7affd",
+                        "inverse-on-surface": "#f3f0f0",
+                        "surface": "#fcf9f8",
+                        "inverse-primary": "#ffb3b0",
+                        "on-surface": "#1b1c1c",
+                        "outline": "#8c706f",
+                        "tertiary": "#645e49",
+                        "on-secondary-fixed": "#230851",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#a29b83",
+                        "surface-bright": "#fcf9f8",
+                        "primary-fixed-dim": "#ffb3b0",
+                        "on-primary-fixed-variant": "#8c1520",
+                        "error": "#ba1a1a",
+                        "primary": "#ae2f34",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1c1c",
+                        "background": "#fcf9f8",
+                        "surface-tint": "#ae2f34",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#410006",
+                        "surface-container-high": "#eae7e7",
+                        "outline-variant": "#e0bfbd",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-surface": "#303030",
+                        "primary-container": "#ff6b6b",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed-dim": "#cec6ad",
+                        "on-tertiary-fixed": "#1f1c0b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "margin-tablet": "40px",
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "base": "4px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .shadow-soft {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .pulse-qr {
+            animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(200, 175, 253, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(200, 175, 253, 0);
+            }
+        }
+
+        .dot-flashing {
+            position: relative;
+            width: 4px;
+            height: 4px;
+            border-radius: 2px;
+            background-color: currentColor;
+            animation: dot-flashing 1s infinite linear alternate;
+            animation-delay: .5s;
+        }
+        .dot-flashing::before, .dot-flashing::after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            top: 0;
+        }
+        .dot-flashing::before {
+            left: -8px;
+            width: 4px;
+            height: 4px;
+            border-radius: 2px;
+            background-color: currentColor;
+            animation: dot-flashing 1s infinite alternate;
+            animation-delay: 0s;
+        }
+        .dot-flashing::after {
+            left: 8px;
+            width: 4px;
+            height: 4px;
+            border-radius: 2px;
+            background-color: currentColor;
+            animation: dot-flashing 1s infinite alternate;
+            animation-delay: 1s;
+        }
+
+        @keyframes dot-flashing {
+            0% { background-color: currentColor; }
+            50%, 100% { background-color: rgba(0,0,0,0.1); }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative pb-safe">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-mobile h-16 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md text-primary dark:text-primary-fixed font-headline-sm text-headline-sm docked full-width top-0 sticky bg-surface dark:bg-surface-dim shadow-soft z-50">
+<button aria-label="Language" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200">
+<span class="material-symbols-outlined">language</span>
+</button>
+<div class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed tracking-tighter">Aura</div>
+<button aria-label="Favorite" class="hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 text-on-surface-variant dark:text-outline-variant">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center px-margin-mobile py-lg max-w-md mx-auto w-full pb-[100px]">
+<div class="text-center mb-xl">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background mb-base">Connect Partner</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Scan this code to sync your Aura experience.</p>
+</div>
+<!-- QR Code Container -->
+<div class="relative mb-xl w-full max-w-[280px]">
+<div class="absolute inset-0 bg-secondary-container/20 rounded-xl pulse-qr blur-md"></div>
+<div class="bg-surface-container-lowest p-lg rounded-xl shadow-soft relative z-10 border border-surface-variant flex flex-col items-center">
+<!-- Mock QR Code visually -->
+<div class="w-48 h-48 bg-surface-variant rounded-md mb-md relative overflow-hidden" data-alt="A clean, minimalist abstract geometric pattern resembling a sophisticated, modern QR code design in high contrast black and white. The graphic is set against a soft, bright background, adhering to a minimalist, premium tech aesthetic with crisp edges and negative space." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBoahHSvBDkzqo_Ro1Ww0HbOxC60TJkCaElyeoyMUKrqEpv6N7uyCvOR2GszeYk6316HxvsoprY7yYNowo5ZfraYO6yJavwORYnNDVguEJHLP5llGQuOtAiDyVyddoYHtRgyVsV1Nh3cn88n9yXiucj50lgHG2TorBpyFfX6rztbDh5ftxRU0LjqzV88QNuwwSyyYlNEZrtfUcUcRocQrUe2e71MbYaC1deoTY7FzDi_rHTxEjMiUg3lA')"></div>
+<div class="text-center w-full border-t border-surface-variant pt-md">
+<div class="font-label-sm text-label-sm text-on-surface-variant mb-base uppercase tracking-wider">Session Code</div>
+<div class="font-display-lg text-display-lg text-primary tracking-[0.1em] font-bold">ABC123</div>
+</div>
+</div>
+</div>
+<!-- Status & Timer -->
+<div class="flex flex-col items-center space-y-md mb-xl">
+<div class="flex items-center space-x-sm bg-secondary-fixed/50 px-md py-sm rounded-full">
+<span class="font-label-md text-label-md text-on-secondary-fixed-variant">Waiting for partner</span>
+<div class="w-6 flex justify-center text-on-secondary-fixed-variant ml-xs">
+<div class="dot-flashing"></div>
+</div>
+</div>
+<div class="flex items-center text-outline">
+<span class="material-symbols-outlined text-sm mr-xs">timer</span>
+<span class="font-label-md text-label-md">Expires in 8:32</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="w-full space-y-sm mt-auto">
+<button class="w-full bg-secondary-container/10 text-secondary font-label-md text-label-md py-4 rounded-full flex items-center justify-center space-x-2 border border-secondary-container hover:bg-secondary-container/20 transition-colors">
+<span class="material-symbols-outlined">share</span>
+<span>Share Link</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-surface dark:bg-surface-container-low shadow-[0_-4px_20px_rgba(0,0,0,0.05)] docked full-width bottom-0 rounded-t-xl font-label-sm text-label-sm-mobile md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-secondary-container/20 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined mb-1">home</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-secondary-container/20 p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined mb-1">history</span>
+<span>History</span>
+</button>
+<!-- Assuming Profile intent based on account linking nature, highlighted actively -->
+<button class="flex flex-col items-center justify-center bg-primary-container/10 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1 active:scale-110 transition-transform duration-300 ease-out">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">person</span>
+<span>Profile</span>
+</button>
+</nav>
+</body></html>

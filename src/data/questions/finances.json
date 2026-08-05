@@ -1,0 +1,107 @@
+{
+  "section": "finances",
+  "subjects": [
+    {
+      "id": "spending-habits",
+      "name": "Spending Habits",
+      "questions": [
+        {
+          "id": "fin-spend-01",
+          "depth": "light",
+          "content": {
+            "en": "Are you a spender or a saver?",
+            "fr": "Êtes-vous dépensier ou économe ?",
+            "ar": "هل أنت منفق أم مدخر؟"
+          }
+        },
+        {
+          "id": "fin-spend-02",
+          "depth": "light",
+          "content": {
+            "en": "How much can you spend without checking in with your partner first?",
+            "fr": "Combien pouvez-vous dépenser sans d'abord consulter votre partenaire ?",
+            "ar": "كم يمكنك إنفاقه دون استشارة شريكك أولاً؟"
+          }
+        },
+        {
+          "id": "fin-spend-03",
+          "depth": "medium",
+          "content": {
+            "en": "What's the biggest financial mistake you've made?",
+            "fr": "Quelle est la plus grande erreur financière que vous ayez commise ?",
+            "ar": "ما هو أكبر خطأ مالي ارتكبته؟"
+          }
+        },
+        {
+          "id": "fin-spend-04",
+          "depth": "medium",
+          "content": {
+            "en": "Do you think buying experiences is more important than buying things?",
+            "fr": "Pensez-vous qu'acheter des expériences est plus important que d'acheter des choses ?",
+            "ar": "هل تعتقد أن شراء التجارب أهم من شراء الأشياء؟"
+          }
+        },
+        {
+          "id": "fin-spend-05",
+          "depth": "deep",
+          "content": {
+            "en": "What money habit of mine would bother you most if it never changed?",
+            "fr": "Quelle habitude d'argent la mienne vous dérangerait le plus si elle ne changeait jamais ?",
+            "ar": "أي عادة مالية خاصة بي ستعك أكثر إذا لم تتغير أبداً؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "financial-transparency",
+      "name": "Financial Transparency",
+      "questions": [
+        {
+          "id": "fin-trans-01",
+          "depth": "light",
+          "content": {
+            "en": "Should we combine all our finances or keep some separate?",
+            "fr": "Devrions-nous combiner toutes nos finances ou en garder certaines séparées ?",
+            "ar": "هل يجب أن نجمع كل أموالنا أو نحتفظ ببعضها منفصلة؟"
+          }
+        },
+        {
+          "id": "fin-trans-02",
+          "depth": "light",
+          "content": {
+            "en": "How transparent should partners be about their income and debts?",
+            "fr": "Les partenaires devraient-ils être transparents sur leurs revenus et dettes ?",
+            "ar": "كم يجب أن يكون الشريكان شفافين بشأن دخلهما وديونهما؟"
+          }
+        },
+        {
+          "id": "fin-trans-03",
+          "depth": "medium",
+          "content": {
+            "en": "If one partner earns much more, how should we split costs?",
+            "fr": "Si un partenaire gagne beaucoup plus, comment devrions-nous diviser les coûts ?",
+            "ar": "إذا كان أحد الشريكين يكسب أكثر بكثير، كيف نقسم التكاليف؟"
+          }
+        },
+        {
+          "id": "fin-trans-04",
+          "depth": "medium",
+          "content": {
+            "en": "What does financial security mean to you?",
+            "fr": "Que signifie la sécurité financière pour vous ?",
+            "ar": "ماذا تعني الأمن المالي بالنسبة لك؟"
+          }
+        },
+        {
+          "id": "fin-trans-05",
+          "depth": "deep",
+          "content": {
+            "en": "How do we handle it if one of us loses income for six months?",
+            "fr": "Comment gérons-nous si l'un de nous perd son revenu pendant six mois ?",
+            "ar": "كيف نتعامل إذا فقد أحدنا دخله لمدة ستة أشهر؟"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "section": "daily-life",
+  "subjects": [
+    {
+      "id": "morning-routines",
+      "name": "Morning Routines",
+      "questions": [
+        {
+          "id": "daily-morning-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you need alone time before starting the day?",
+            "fr": "Avez-vous besoin de temps seul avant de commencer la journée ?",
+            "ar": "هل تحتاج وقتاً وحدي قبل أن تبدأ اليوم؟"
+          }
+        },
+        {
+          "id": "daily-morning-02",
+          "depth": "light",
+          "content": {
+            "en": "Should breakfast be eaten together or is it okay to eat separately?",
+            "fr": "Le petit-déjeuner devrait-il être pris ensemble ou est-il acceptable de manger séparément ?",
+            "ar": "هل يجب تناول الإفطار معاً أم يُقبل الأكل منفصلين؟"
+          }
+        },
+        {
+          "id": "daily-morning-03",
+          "depth": "light",
+          "content": {
+            "en": "Is checking your phone first thing in the morning okay?",
+            "fr": "Est-il acceptable de vérifier son téléphone dès le matin ?",
+            "ar": "هل من المقبول التحقق من الهاتف في الصباح الباكر؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "chores",
+      "name": "Chores & Responsibilities",
+      "questions": [
+        {
+          "id": "daily-chores-01",
+          "depth": "light",
+          "content": {
+            "en": "How should we split household chores?",
+            "fr": "Comment devrions-nous diviser les tâches ménagères ?",
+            "ar": "كيف يجب تقسيم الأعمال المنزلية؟"
+          }
+        },
+        {
+          "id": "daily-chores-02",
+          "depth": "light",
+          "content": {
+            "en": "Do you mind doing the dishes every night?",
+            "fr": "Ça vous dérange de faire la vaisselle chaque soir ?",
+            "ar": "هل يزعجك غسل الأطباق كل ليلة؟"
+          }
+        },
+        {
+          "id": "daily-chores-03",
+          "depth": "medium",
+          "content": {
+            "en": "Would you rather hire help for cleaning than argue about chores?",
+            "fr": "Préféreriez-vous engager de l'aide pour le nettoyage plutôt que de se disputer pour les tâches ?",
+            "ar": "هل تفضل استئجار مساعدة للتنظيف بدلاً من الشجار على الأعمال المنزلية؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "social-life",
+      "name": "Social Life",
+      "questions": [
+        {
+          "id": "daily-social-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you need to see your friends regularly, even if it means time apart?",
+            "fr": "Avez-vous besoin de voir vos amis régulièrement, même si cela signifie du temps séparé ?",
+            "ar": "هل تحتاج إلى رؤية أصدقائك بانتظام حتى لو كان ذلك يعني الوقت منفصلاً؟"
+          }
+        },
+        {
+          "id": "daily-social-02",
+          "depth": "light",
+          "content": {
+            "en": "Should your partner's friends become your friends too?",
+            "fr": "Les amis de votre partenaire devraient-ils devenir vos amis aussi ?",
+            "ar": "هل يجب أن يصبح أصدقاء شريكك أصدقائك أيضاً؟"
+          }
+        },
+        {
+          "id": "daily-social-03",
+          "depth": "medium",
+          "content": {
+            "en": "Is going out together more fun than staying in?",
+            "fr": "Sortir ensemble est-il plus amusant que rester à la maison ?",
+            "ar": "هل الخروج معاً أكثر متعة من البقاء في المنزل؟"
+          }
+        }
+      ]
+    }
+  ]
+}

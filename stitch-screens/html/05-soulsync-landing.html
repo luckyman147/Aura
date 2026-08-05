@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SoulSync - Start Journey</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#543f83",
+                        "on-secondary-fixed-variant": "#4f3a7f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "primary-fixed": "#ffdad8",
+                        "on-tertiary-fixed-variant": "#4c4733",
+                        "surface-variant": "#e4e2e1",
+                        "on-surface-variant": "#584140",
+                        "on-primary-container": "#6d0010",
+                        "secondary-fixed": "#eaddff",
+                        "secondary": "#675298",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-fixed": "#ebe2c8",
+                        "on-tertiary-container": "#373321",
+                        "secondary-container": "#c7affd",
+                        "inverse-on-surface": "#f3f0f0",
+                        "surface": "#fcf9f8",
+                        "inverse-primary": "#ffb3b0",
+                        "on-surface": "#1b1c1c",
+                        "outline": "#8c706f",
+                        "tertiary": "#645e49",
+                        "on-secondary-fixed": "#230851",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#a29b83",
+                        "surface-bright": "#fcf9f8",
+                        "primary-fixed-dim": "#ffb3b0",
+                        "on-primary-fixed-variant": "#8c1520",
+                        "error": "#ba1a1a",
+                        "primary": "#ae2f34",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1c1c",
+                        "background": "#fcf9f8",
+                        "surface-tint": "#ae2f34",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#410006",
+                        "surface-container-high": "#eae7e7",
+                        "outline-variant": "#e0bfbd",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-surface": "#303030",
+                        "primary-container": "#ff6b6b",
+                        "secondary-fixed-dim": "#d1bcff",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed-dim": "#cec6ad",
+                        "on-tertiary-fixed": "#1f1c0b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "margin-tablet": "40px",
+                        "md": "16px",
+                        "margin-mobile": "20px",
+                        "base": "4px",
+                        "sm": "12px",
+                        "xl": "32px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }]
+                    },
+                    "backgroundImage": {
+                        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-romantic-gradient {
+            background: linear-gradient(135deg, #ffdad8 0%, #eaddff 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="h-full bg-romantic-gradient font-body-md text-on-surface antialiased flex flex-col relative overflow-hidden">
+<!-- Ambient Background Effects -->
+<div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-white/30 blur-[100px] animate-float" style="animation-delay: 0s;"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary-container/20 blur-[120px] animate-float" style="animation-delay: -3s;"></div>
+</div>
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md text-primary font-headline-sm text-headline-sm docked full-width top-0 sticky shadow-soft flex justify-between items-center w-full px-margin-mobile h-16 z-50">
+<button aria-label="Menu" class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50">
+<span class="material-symbols-outlined" data-icon="language" style="font-variation-settings: 'FILL' 0;">language</span>
+<span class="ml-1 font-label-sm text-label-sm uppercase tracking-wider">EN</span>
+</button>
+<h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tighter absolute left-1/2 -translate-x-1/2">
+            Aura
+        </h1>
+<button aria-label="Favorites" class="text-on-surface-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/50">
+<span class="material-symbols-outlined" data-icon="favorite" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center relative z-10 px-margin-mobile md:px-margin-tablet py-xl w-full max-w-lg mx-auto">
+<!-- Centerpiece Identity -->
+<div class="text-center mb-xl w-full animate-float">
+<!-- Replacing raw image with placeholder structure -->
+<div class="w-32 h-32 mx-auto mb-6 rounded-full glass-panel shadow-soft flex items-center justify-center relative overflow-hidden group">
+<div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500"></div>
+<span class="material-symbols-outlined text-[64px] text-primary" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h2 class="font-display-lg text-[48px] leading-[1.1] font-bold text-on-surface mb-2 tracking-tight">SoulSync</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xs mx-auto">Discover deeper connection through meaningful conversation.</p>
+</div>
+<!-- Action Area -->
+<div class="w-full flex flex-col gap-4">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-label-md text-label-md flex items-center justify-center shadow-soft hover:shadow-[0_8px_30px_rgba(174,47,52,0.2)] hover:opacity-90 active:scale-[0.98] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                Start Session
+            </button>
+<button class="w-full h-14 bg-secondary-container/30 text-on-secondary-container rounded-xl font-label-md text-label-md flex items-center justify-center glass-panel hover:bg-secondary-container/50 active:scale-[0.98] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-container">
+                Join Session
+            </button>
+</div>
+</main>
+<!-- Note: BottomNavBar intentionally suppressed as this is a linear/transactional entry screen -->
+</body></html>

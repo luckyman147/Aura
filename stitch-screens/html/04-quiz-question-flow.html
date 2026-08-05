@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Question Flow - Aura</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#543f83",
+                      "on-secondary-fixed-variant": "#4f3a7f",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f6f3f2",
+                      "primary-fixed": "#ffdad8",
+                      "on-tertiary-fixed-variant": "#4c4733",
+                      "surface-variant": "#e4e2e1",
+                      "on-surface-variant": "#584140",
+                      "on-primary-container": "#6d0010",
+                      "secondary-fixed": "#eaddff",
+                      "secondary": "#675298",
+                      "surface-dim": "#dcd9d9",
+                      "tertiary-fixed": "#ebe2c8",
+                      "on-tertiary-container": "#373321",
+                      "secondary-container": "#c7affd",
+                      "inverse-on-surface": "#f3f0f0",
+                      "surface": "#fcf9f8",
+                      "inverse-primary": "#ffb3b0",
+                      "on-surface": "#1b1c1c",
+                      "outline": "#8c706f",
+                      "tertiary": "#645e49",
+                      "on-secondary-fixed": "#230851",
+                      "on-error": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#a29b83",
+                      "surface-bright": "#fcf9f8",
+                      "primary-fixed-dim": "#ffb3b0",
+                      "on-primary-fixed-variant": "#8c1520",
+                      "error": "#ba1a1a",
+                      "primary": "#ae2f34",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#1b1c1c",
+                      "background": "#fcf9f8",
+                      "surface-tint": "#ae2f34",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#410006",
+                      "surface-container-high": "#eae7e7",
+                      "outline-variant": "#e0bfbd",
+                      "surface-container-highest": "#e4e2e1",
+                      "inverse-surface": "#303030",
+                      "primary-container": "#ff6b6b",
+                      "secondary-fixed-dim": "#d1bcff",
+                      "surface-container": "#f0eded",
+                      "tertiary-fixed-dim": "#cec6ad",
+                      "on-tertiary-fixed": "#1f1c0b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "gutter": "16px",
+                      "margin-tablet": "40px",
+                      "md": "16px",
+                      "margin-mobile": "20px",
+                      "base": "4px",
+                      "sm": "12px",
+                      "xl": "32px",
+                      "xs": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg-mobile": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="bg-surface/80 backdrop-blur-md shadow-soft w-full top-0 sticky z-50 flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-variant transition-colors cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</div>
+<h1 class="font-display-lg text-display-lg font-bold text-primary tracking-tighter">Aura</h1>
+<div class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-variant transition-colors cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-md mx-auto flex flex-col justify-between px-margin-mobile pt-lg pb-xl relative">
+<!-- Progress & Meta -->
+<div class="w-full flex flex-col gap-sm mt-md">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">3/10</span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-widest bg-secondary-container/30 px-3 py-1 rounded-full">Communication</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden mt-xs">
+<div class="h-full bg-gradient-to-r from-secondary to-primary rounded-full" style="width: 30%;"></div>
+</div>
+</div>
+<!-- Question Section -->
+<div class="flex-1 flex flex-col justify-center items-center py-xl my-xl text-center">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface leading-tight mb-lg">
+                We handle disagreements in a healthy and constructive way.
+            </h2>
+<div class="inline-flex items-center gap-2 mt-md px-4 py-2 bg-surface-container-low rounded-full">
+<span class="material-symbols-outlined text-tertiary" data-icon="schedule" style="font-size: 16px;">schedule</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Your turn</span>
+</div>
+</div>
+<!-- Answer Actions -->
+<div class="w-full flex justify-between items-center gap-md mt-auto mb-md">
+<!-- Disagree -->
+<button class="flex-1 flex flex-col items-center justify-center gap-sm p-lg bg-surface border border-outline-variant rounded-2xl hover:bg-error-container/20 hover:border-error hover:shadow-soft transition-all duration-300 group">
+<div class="w-12 h-12 rounded-full bg-error-container/30 flex items-center justify-center text-error group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Disagree</span>
+</button>
+<!-- Neutral -->
+<button class="flex-1 flex flex-col items-center justify-center gap-sm p-lg bg-surface border border-outline-variant rounded-2xl hover:bg-surface-variant/50 hover:border-outline hover:shadow-soft transition-all duration-300 group">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="remove">remove</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Neutral</span>
+</button>
+<!-- Agree -->
+<button class="flex-1 flex flex-col items-center justify-center gap-sm p-lg bg-surface border border-outline-variant rounded-2xl hover:bg-secondary-container/20 hover:border-secondary hover:shadow-soft transition-all duration-300 group">
+<div class="w-12 h-12 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Agree</span>
+</button>
+</div>
+</main>
+</body></html>

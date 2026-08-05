@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aura - How do you want to play?</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#543f83",
+                      "on-secondary-fixed-variant": "#4f3a7f",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#f6f3f2",
+                      "primary-fixed": "#ffdad8",
+                      "on-tertiary-fixed-variant": "#4c4733",
+                      "surface-variant": "#e4e2e1",
+                      "on-surface-variant": "#584140",
+                      "on-primary-container": "#6d0010",
+                      "secondary-fixed": "#eaddff",
+                      "secondary": "#675298",
+                      "surface-dim": "#dcd9d9",
+                      "tertiary-fixed": "#ebe2c8",
+                      "on-tertiary-container": "#373321",
+                      "secondary-container": "#c7affd",
+                      "inverse-on-surface": "#f3f0f0",
+                      "surface": "#fcf9f8",
+                      "inverse-primary": "#ffb3b0",
+                      "on-surface": "#1b1c1c",
+                      "outline": "#8c706f",
+                      "tertiary": "#645e49",
+                      "on-secondary-fixed": "#230851",
+                      "on-error": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#a29b83",
+                      "surface-bright": "#fcf9f8",
+                      "primary-fixed-dim": "#ffb3b0",
+                      "on-primary-fixed-variant": "#8c1520",
+                      "error": "#ba1a1a",
+                      "primary": "#ae2f34",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-background": "#1b1c1c",
+                      "background": "#fcf9f8",
+                      "surface-tint": "#ae2f34",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#410006",
+                      "surface-container-high": "#eae7e7",
+                      "outline-variant": "#e0bfbd",
+                      "surface-container-highest": "#e4e2e1",
+                      "inverse-surface": "#303030",
+                      "primary-container": "#ff6b6b",
+                      "secondary-fixed-dim": "#d1bcff",
+                      "surface-container": "#f0eded",
+                      "tertiary-fixed-dim": "#cec6ad",
+                      "on-tertiary-fixed": "#1f1c0b"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "24px",
+                      "gutter": "16px",
+                      "margin-tablet": "40px",
+                      "md": "16px",
+                      "margin-mobile": "20px",
+                      "base": "4px",
+                      "sm": "12px",
+                      "xl": "32px",
+                      "xs": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "40px",
+                              {
+                                      "lineHeight": "48px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .shadow-soft {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .pb-safe {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
+        
+        /* Custom radio button styles for cards */
+        .card-radio:checked + div {
+            border-color: #ae2f34; /* primary */
+            border-width: 2px;
+            background-color: rgba(174, 47, 52, 0.05); /* primary with opacity */
+        }
+        
+        .card-radio:checked + div .icon-container {
+            background-color: #ae2f34;
+            color: white;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background h-full font-sans antialiased flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md text-primary dark:text-primary-fixed shadow-soft docked full-width top-0 sticky z-40 bg-surface dark:bg-surface-dim flex justify-between items-center w-full px-margin-mobile h-16">
+<button class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed tracking-tighter">Aura</h1>
+<button class="text-on-surface-variant dark:text-outline-variant hover:opacity-80 transition-opacity active:scale-95 transition-transform duration-200 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center pt-xl pb-[100px] px-margin-mobile w-full max-w-3xl mx-auto md:px-margin-tablet">
+<!-- Header -->
+<div class="text-center w-full mb-xl">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-on-surface mb-xs">How do you want to play?</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Select a session type to begin your journey.</p>
+</div>
+<!-- Session Type Cards (Bento/Glassmorphism inspired) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md w-full mb-xl">
+<!-- Online Card -->
+<label class="relative cursor-pointer group w-full h-full block">
+<input checked="" class="card-radio sr-only" name="session_type" type="radio" value="online"/>
+<div class="bg-surface rounded-xl p-lg h-full flex flex-col items-start shadow-soft border border-[#EEEEEE] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] group-active:scale-[0.98]">
+<div class="icon-container w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center mb-md transition-colors duration-300">
+<span class="material-symbols-outlined text-[28px]" data-icon="schedule">schedule</span>
+</div>
+<div class="mt-auto">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-base">Online</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Answer anytime, no rush</p>
+</div>
+</div>
+</label>
+<!-- Realtime Card -->
+<label class="relative cursor-pointer group w-full h-full block">
+<input class="card-radio sr-only" name="session_type" type="radio" value="realtime"/>
+<div class="bg-surface rounded-xl p-lg h-full flex flex-col items-start shadow-soft border border-[#EEEEEE] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] group-active:scale-[0.98]">
+<div class="icon-container w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center mb-md transition-colors duration-300">
+<span class="material-symbols-outlined text-[28px]" data-icon="bolt">bolt</span>
+</div>
+<div class="mt-auto">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-base">Realtime</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Answer together, now</p>
+</div>
+</div>
+</label>
+</div>
+<!-- Language Selector -->
+<div class="w-full mb-xl flex flex-col items-center">
+<p class="font-label-md text-label-md text-on-surface-variant mb-md uppercase tracking-wider">Select Language</p>
+<div class="flex space-x-md">
+<label class="cursor-pointer group relative">
+<input checked="" class="peer sr-only" name="language" type="radio" value="en"/>
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-transparent peer-checked:border-primary peer-checked:shadow-[0_0_0_4px_rgba(174,47,52,0.1)] transition-all duration-300 shadow-soft">
+<img class="w-full h-full object-cover" data-alt="A meticulously composed close-up of a circular icon displaying the Union Jack flag. The flag's striking red, white, and blue geometric patterns are rendered with ultra-high resolution and crisp clarity. The lighting is soft and diffused, creating a premium, modern aesthetic without harsh glare. Set against a clean, warm-toned minimal background that complements the romantic, editorial vibe of the application. The overall mood is sophisticated and inviting, perfectly suited for a high-end UI element." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdcoEPbmrfhGjp7kmanpMEdoVWEhHgZ5FdwcJ-mUdg0gXH_P7QA1iHFYIKyQ28AZjJpnsKHwpJ0kVley1Qbf6sqlT57dYw1_dvufy2Qy-alkkMk3Fr1zrBczqT2OJ91plldVyvrrL-08S9FCynkWKmxcUDWBMSf0MV1xzdAbJi-9Q8fYxgM7ZiRluhwLkQjZwFWemvoS9WAfdvYJCGuB5HfoXclXFSiNtP5NgE5B6Ul075he_6wt3hEw"/>
+</div>
+</label>
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="language" type="radio" value="fr"/>
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-transparent peer-checked:border-primary peer-checked:shadow-[0_0_0_4px_rgba(174,47,52,0.1)] transition-all duration-300 shadow-soft">
+<img class="w-full h-full object-cover" data-alt="A meticulously composed close-up of a circular icon displaying the French Tricolour flag. The blue, white, and red vertical bands are vibrant and clearly defined. The lighting is soft and diffused, creating a premium, modern aesthetic without harsh glare. Set against a clean, warm-toned minimal background that complements the romantic, editorial vibe of the application. The overall mood is sophisticated and inviting, perfectly suited for a high-end UI element." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxVNNXqH1OcUtaezbZVc2q7Y3nDZSLCvO3yu8mCa5WmZdQ7K8o_YtMShyBp5qvoXoJDUJUL2Y_22_-8L8GHvPYgQh6k9HiGtE49VkXuBc7Uj7dDLJTu-Aqynnl0Bc3WGkyZm5PalSxM81t_B1vBRNnqPwrM5iXHjSiHiE1HBIbvqwoZiQFG9m8ie-Xrb4D4DmI1Qnw1HmBwDmXxQ1QM6pv14I0Tdb0f7z5PvUWQCuHuJ2hPlOuJKuzEQ"/>
+</div>
+</label>
+<label class="cursor-pointer group relative">
+<input class="peer sr-only" name="language" type="radio" value="es"/>
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-transparent peer-checked:border-primary peer-checked:shadow-[0_0_0_4px_rgba(174,47,52,0.1)] transition-all duration-300 shadow-soft">
+<img class="w-full h-full object-cover" data-alt="A meticulously composed close-up of a circular icon displaying the Spanish flag. The red and yellow horizontal bands, along with the detailed coat of arms, are rendered with high fidelity. The lighting is soft and diffused, creating a premium, modern aesthetic without harsh glare. Set against a clean, warm-toned minimal background that complements the romantic, editorial vibe of the application. The overall mood is sophisticated and inviting, perfectly suited for a high-end UI element." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgwFJ12-UHgPmAV3XJOoYWsbxr3jPelKbEko3SJEvvEaSPvXQVG6rR7MOIWTsqMgTrukF0Q66s_XWakGyQtXqWh4cr9r8ft-N3p6E8gLhQ5cmLs6fmyZGTDckjiUiOw0kYDTkD_xUnwJjsWaznD1v4lIeA7zBJo3B43JdK5juulOD5Ma3lrNjdkrI6E7R2s9ivqPwnfPkiyoEKP3s4c7Q04UJvTGQemamEfZReWV6gbfXFqs2QBFFebw"/>
+</div>
+</label>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="w-full mt-auto pt-lg">
+<button class="w-full min-h-[56px] bg-primary text-on-primary font-label-md text-label-md rounded-full shadow-soft hover:shadow-[0_6px_24px_rgba(174,47,52,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary/20">
+                Create Session
+                <span class="material-symbols-outlined ml-2 text-[20px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface dark:bg-surface-container-low text-primary dark:text-primary-fixed-dim docked full-width bottom-0 rounded-t-xl bg-surface dark:bg-surface-container-low shadow-[0_-4px_20px_rgba(0,0,0,0.05)] shadow-soft fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-primary-container/10 text-primary dark:text-primary-fixed-dim rounded-full px-4 py-1 hover:bg-secondary-container/20 scale-110 transition-transform duration-300 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- History (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-secondary-container/20 hover:opacity-80 transition-opacity p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm mt-1">History</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant hover:bg-secondary-container/20 hover:opacity-80 transition-opacity p-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

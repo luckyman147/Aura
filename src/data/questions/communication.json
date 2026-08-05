@@ -1,0 +1,125 @@
+{
+  "section": "communication",
+  "subjects": [
+    {
+      "id": "conflict-resolution",
+      "name": "Conflict Resolution",
+      "questions": [
+        {
+          "id": "comm-conflict-01",
+          "depth": "light",
+          "content": {
+            "en": "How do you prefer to handle disagreements — talk immediately or take space first?",
+            "fr": "Comment préférez-vous gérer les désaccords — en parler immédiatement ou prendre du recul d'abord ?",
+            "ar": "كيف تفضل التعامل مع الخلافات — التحدث فوراً أولاً أخذ مسافة؟"
+          }
+        },
+        {
+          "id": "comm-conflict-02",
+          "depth": "light",
+          "content": {
+            "en": "What's your go-to response when you're angry — talk it out, go silent, or walk away?",
+            "fr": "Quelle est votre réponse par défaut quand vous êtes en colère — en parler, vous taire, ou partir ?",
+            "ar": "ما هي استجابتك المعتادة عندما تغضب — التحدث، الصمت، أو المغادرة؟"
+          }
+        },
+        {
+          "id": "comm-conflict-03",
+          "depth": "medium",
+          "content": {
+            "en": "What does a sincere apology look like to you?",
+            "fr": "À quoi ressemble une excuse sincère pour vous ?",
+            "ar": "كيف تبدو الاعتذار الصادق بالنسبة لك؟"
+          }
+        },
+        {
+          "id": "comm-conflict-04",
+          "depth": "medium",
+          "content": {
+            "en": "When was the last time you felt truly heard by your partner?",
+            "fr": "Quand avez-vous été la dernière fois que vous vous êtes senti vraiment écouté par votre partenaire ?",
+            "ar": "متى شعرت آخر مرة أن شريكي يسمعني حقاً؟"
+          }
+        },
+        {
+          "id": "comm-conflict-05",
+          "depth": "deep",
+          "content": {
+            "en": "What topics are hardest for us to discuss calmly?",
+            "fr": "Quels sujets sont les plus difficiles pour nous à discuter calmement ?",
+            "ar": "ما هي المواضيع الأصعب对于我们 أن نناقشها بهدوء؟"
+          }
+        },
+        {
+          "id": "comm-conflict-06",
+          "depth": "deep",
+          "content": {
+            "en": "Do we try to understand each other, or just try to win the argument?",
+            "fr": "Essayons-nous de nous comprendre, ou juste de gagner l'argument ?",
+            "ar": "هل نحاول فهم بعضنا البعض، أم فقط محاولة الفوز بالجدل؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "emotional-expression",
+      "name": "Emotional Expression",
+      "questions": [
+        {
+          "id": "comm-emotion-01",
+          "depth": "light",
+          "content": {
+            "en": "How do you like to be comforted when you're upset?",
+            "fr": "Comment aimez-vous être consolé quand vous êtes contrarié ?",
+            "ar": "كيف تحب أن تُواسى عندما تحزن؟"
+          }
+        },
+        {
+          "id": "comm-emotion-02",
+          "depth": "light",
+          "content": {
+            "en": "Do you feel comfortable telling your partner everything?",
+            "fr": "Vous sentez-vous à l'aise pour tout dire à votre partenaire ?",
+            "ar": "هل تشعر بالراحة في إخبار شريكي بكل شيء؟"
+          }
+        },
+        {
+          "id": "comm-emotion-03",
+          "depth": "medium",
+          "content": {
+            "en": "What's the best way your partner can show you they care?",
+            "fr": "Quelle est la meilleure façon pour votre partenaire de vous montrer qu'il s'en soucie ?",
+            "ar": "ما هي أفضل طريقة لشريكي لإظهار اهتمامه بي؟"
+          }
+        },
+        {
+          "id": "comm-emotion-04",
+          "depth": "medium",
+          "content": {
+            "en": "Is there something that keeps you awake at night that you haven't shared with me?",
+            "fr": "Y a-t-il quelque chose qui vous empêche de dormir la nuit et que vous n'avez pas partagé avec moi ?",
+            "ar": "هل هناك شيء يمنعك من النوم ليله لم تشاركني به؟"
+          }
+        },
+        {
+          "id": "comm-emotion-05",
+          "depth": "deep",
+          "content": {
+            "en": "When do you feel most loved by me?",
+            "fr": "Quand vous sentez-vous le plus aimé par moi ?",
+            "ar": "متى تشعر بالحب مني أكثر؟"
+          }
+        },
+        {
+          "id": "comm-emotion-06",
+          "depth": "deep",
+          "content": {
+            "en": "What's something you've been afraid to tell me?",
+            "fr": "Quelque chose que vous avez eu peur de me dire ?",
+            "ar": "ما هو شيء خفت من إخباري به؟"
+          }
+        }
+      ]
+    }
+  ]
+}

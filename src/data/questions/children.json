@@ -1,0 +1,107 @@
+{
+  "section": "children",
+  "subjects": [
+    {
+      "id": "family-planning",
+      "name": "Family Planning",
+      "questions": [
+        {
+          "id": "child-plan-01",
+          "depth": "light",
+          "content": {
+            "en": "Do you want to have children someday?",
+            "fr": "Voulez-vous avoir des enfants un jour ?",
+            "ar": "هل تريد أن يكون لديك أطفال يوماً ما؟"
+          }
+        },
+        {
+          "id": "child-plan-02",
+          "depth": "light",
+          "content": {
+            "en": "How many children do you imagine having, if any?",
+            "fr": "Combien d'enfants imaginez-vous avoir, le cas échéant ?",
+            "ar": "كم طفلاً تتخيل أن لديك، إن وجد؟"
+          }
+        },
+        {
+          "id": "child-plan-03",
+          "depth": "medium",
+          "content": {
+            "en": "If we couldn't conceive, how far would we go — treatment, adoption, or neither?",
+            "fr": "Si nous ne pouvions pas concevoir, jusqu'où irions-nous — traitement, adoption, ou ni l'un ni l'autre ?",
+            "ar": "إذا لم نتمكن من الإنجاب، إلى أين سنذهب — علاج، تبني، أو لا شيء؟"
+          }
+        },
+        {
+          "id": "child-plan-04",
+          "depth": "medium",
+          "content": {
+            "en": "When is the right time to start trying for kids?",
+            "fr": "Quel est le bon moment pour commencer à essayer d'avoir des enfants ?",
+            "ar": "ما هو الوقت المناسب للبدء في المحاولة لإنجاب الأطفال؟"
+          }
+        },
+        {
+          "id": "child-plan-05",
+          "depth": "deep",
+          "content": {
+            "en": "If one of us wants kids and the other stays unsure, what do we do?",
+            "fr": "Si l'un de nous veut des enfants et l'autre reste incertain, que faisons-nous ?",
+            "ar": "إذا أراد أحدنا أطفالاً والآخر لا يزال متردداً، ماذا نفعل؟"
+          }
+        }
+      ]
+    },
+    {
+      "id": "parenting-style",
+      "name": "Parenting Style",
+      "questions": [
+        {
+          "id": "child-parent-01",
+          "depth": "light",
+          "content": {
+            "en": "How were you disciplined as a child, and what would you keep or change?",
+            "fr": "Comment avez-vous été discipliné enfant, et que garderiez-vous ou changeriez-vous ?",
+            "ar": "كيف تم تأديبك كطفل، وماذا ستحتفظ به أو تغيره؟"
+          }
+        },
+        {
+          "id": "child-parent-02",
+          "depth": "light",
+          "content": {
+            "en": "What role should screens, faith, or diet play in how we raise them?",
+            "fr": "Quel rôle les écrans, la foi ou l'alimentation devraient-ils jouer dans notre éducation ?",
+            "ar": "ما هو دور الشاشات أو الإيمان أو النظام الغذائي في تربيتنا لهم؟"
+          }
+        },
+        {
+          "id": "child-parent-03",
+          "depth": "medium",
+          "content": {
+            "en": "How involved do you want extended family to be in raising our children?",
+            "fr": "Quel rôle voulez-vous donner à la famille élargie dans l'éducation de nos enfants ?",
+            "ar": "ما هو دور العائلة الممتدة التي تريدها في تربية أطفالنا؟"
+          }
+        },
+        {
+          "id": "child-parent-04",
+          "depth": "medium",
+          "content": {
+            "en": "What values are most important to pass on to our children?",
+            "fr": "Quelles valeurs sont les plus importantes à transmettre à nos enfants ?",
+            "ar": "ما هي القيم الأكثر أهمية في نقلها لأطفالنا؟"
+          }
+        },
+        {
+          "id": "child-parent-05",
+          "depth": "deep",
+          "content": {
+            "en": "How will we handle disagreements about parenting in front of the kids?",
+            "fr": "Comment gérerons-nous les désaccords sur l'éducation devant les enfants ?",
+            "ar": "كيف سنتعامل مع خلافات التربية أمام الأطفال؟"
+          }
+        }
+      ]
+    }
+  ]
+}
