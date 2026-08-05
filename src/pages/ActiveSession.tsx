@@ -20,6 +20,10 @@ function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
 }
 
+function getSessionCode(): string {
+  return localStorage.getItem('aura_session_code') ?? ''
+}
+
 function getSessionId(): string {
   return localStorage.getItem('aura_session_id') ?? ''
 }
@@ -44,6 +48,7 @@ export function ActiveSession() {
 
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
+  const sessionCode = getSessionCode()
   const sessionId = getSessionId()
 
   const categories: Category[] = (() => {
@@ -55,7 +60,7 @@ export function ActiveSession() {
   })()
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
-  const { session } = useSession(sessionId || null)
+  const { session } = useSession(sessionCode || null)
   const { submitAnswer } = useAnswers(sessionId || null, playerId)
   const { messages, sendMessage } = useMessages(sessionId || null)
 
