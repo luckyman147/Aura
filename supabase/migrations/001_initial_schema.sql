@@ -133,8 +133,9 @@ begin
 end;
 $$ language plpgsql security definer;
 
--- Seed questions
-insert into questions (category, text_en, text_fr, text_ar, order_index) values
+-- Seed questions (only if table is empty)
+insert into questions (category, text_en, text_fr, text_ar, order_index)
+select * from (values
 ('communication', 'We handle disagreements in a healthy and constructive way.', 'Nous gérons les désaccords de manière saine et constructive.', 'نتعامل مع خلافاتنا بطريقة صحية وبنّاءة', 1),
 ('communication', 'We feel comfortable expressing our true feelings to each other.', 'Nous nous sentons à l''aise pour exprimer nos vrais sentiments.', 'نشعر بالراحة في التعبير عن مشاعرنا الحقيقية', 2),
 ('communication', 'We listen actively when the other person is speaking.', 'Nous écoutons activement quand l''autre personne parle.', 'نستمع بشكل فعّال عندما يتحدث الطرف الآخر', 3),
@@ -152,4 +153,6 @@ insert into questions (category, text_en, text_fr, text_ar, order_index) values
 ('children', 'We agree on whether or not to have children.', 'Nous sommes d''accord sur le fait d''avoir des enfants ou non.', 'نتفق على ما إذا كان لدينا أطفال أم لا', 15),
 ('children', 'We share similar ideas about parenting styles.', 'Nous partageons des idées similaires sur les styles d''éducation.', 'نشارك أفكارًا متشابهة حول أساليب تربية الأطفال', 16),
 ('marriage', 'We have similar expectations about marriage.', 'Nous avons des attentes similaires sur le mariage.', 'لدينا توقعات متشابهة حول الزواج', 17),
-('marriage', 'We are on the same page about our future together.', 'Nous sommes sur la même longueur d''onde concernant notre avenir ensemble.', 'نحن على نفس التوافق بشأن مستقبلنا معًا', 18);
+('marriage', 'We are on the same page about our future together.', 'Nous sommes sur la même longueur d''onde concernant notre avenir ensemble.', 'نحن على نفس التوافق بشأن مستقبلنا معًا', 18)
+) as v(category, text_en, text_fr, text_ar, order_index)
+where not exists (select 1 from questions limit 1);
