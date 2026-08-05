@@ -142,23 +142,23 @@ $$ language plpgsql security definer;
 -- Seed questions (only if table is empty)
 insert into questions (category, text_en, text_fr, text_ar, order_index)
 select * from (values
-('communication', 'We handle disagreements in a healthy and constructive way.', 'Nous gérons les désaccords de manière saine et constructive.', 'نتعامل مع خلافاتنا بطريقة صحية وبنّاءة', 1),
-('communication', 'We feel comfortable expressing our true feelings to each other.', 'Nous nous sentons à l''aise pour exprimer nos vrais sentiments.', 'نشعر بالراحة في التعبير عن مشاعرنا الحقيقية', 2),
-('communication', 'We listen actively when the other person is speaking.', 'Nous écoutons activement quand l''autre personne parle.', 'نستمع بشكل فعّال عندما يتحدث الطرف الآخر', 3),
-('communication', 'We rarely misunderstand each other.', 'Nous nous comprenons rarement mal.', 'نادرًا ما نفهم بعضنا بشكل خاطئ', 4),
-('values', 'We share similar core values about family and relationships.', 'Nous partageons des valeurs fondamentales similaires sur la famille et les relations.', 'نشارك قيمًا جوهرية متشابهة حول الأسرة والعلاقات', 5),
-('values', 'We are aligned on our long-term life goals and aspirations.', 'Nous sommes alignés sur nos objectifs de vie à long terme.', 'نحن متّفقون على أهداف حياتنا طويلة الأمد', 6),
-('values', 'We have similar views on what matters most in life.', 'Nous avons des points de vue similaires sur ce qui compte le plus.', 'لدينا وجهات نظر متشابهة حول ما يهمّ أكثر في الحياة', 7),
-('lifestyle', 'We enjoy spending quality time together on weekends.', 'Nous aimons passer du temps de qualité ensemble le week-end.', 'نستمتع بقضاء وقت ممتع معًا في عطلات نهاية الأسبوع', 8),
-('lifestyle', 'We have compatible daily routines and habits.', 'Nous avons des routines quotidiennes et des habitudes compatibles.', 'لدينا روتين يومي وعادات متوافقة', 9),
-('lifestyle', 'We support each other''s personal hobbies and interests.', 'Nous soutenons les hobbies et intérêts personnels de l''autre.', 'ندعم الهوايات والاهتمامات الشخصية لبعضنا', 10),
-('intimacy', 'We feel emotionally connected and close.', 'Nous nous sentons émotionnellement connectés et proches.', 'نشعر بارتباط عاطفي وقرب', 11),
-('intimacy', 'We are satisfied with our physical affection.', 'Nous sommes satisfaits de notre affection physique.', 'راضون عن تعبيراتنا الجسدية عن الحب', 12),
-('finances', 'We have similar attitudes toward saving and spending.', 'Nous avons des attitudes similaires vers l''épargne et les dépenses.', 'لدينا مواقف متشابهة تجاه الادخار والإنفاق', 13),
-('finances', 'We are open and honest about financial matters.', 'Nous sommes ouverts et honnêtes sur les questions financières.', 'مفتوحون وصادقون في Matters المالية', 14),
-('children', 'We agree on whether or not to have children.', 'Nous sommes d''accord sur le fait d''avoir des enfants ou non.', 'نتفق على ما إذا كان لدينا أطفال أم لا', 15),
-('children', 'We share similar ideas about parenting styles.', 'Nous partageons des idées similaires sur les styles d''éducation.', 'نشارك أفكارًا متشابهة حول أساليب تربية الأطفال', 16),
-('marriage', 'We have similar expectations about marriage.', 'Nous avons des attentes similaires sur le mariage.', 'لدينا توقعات متشابهة حول الزواج', 17),
-('marriage', 'We are on the same page about our future together.', 'Nous sommes sur la même longueur d''onde concernant notre avenir ensemble.', 'نحن على نفس التوافق بشأن مستقبلنا معًا', 18)
+('communication', 'Do we handle disagreements in a healthy and constructive way?', 'Gérons-nous les désaccords de manière saine et constructive?', 'هل نتعامل مع خلافاتنا بطريقة صحية وبنّاءة؟', 1),
+('communication', 'Do we feel comfortable expressing our true feelings to each other?', 'Nous sentons-nous à l''aise pour exprimer nos vrais sentiments l''un envers l''autre?', 'هل نشعر بالراحة في التعبير عن مشاعرنا الحقيقية لبعضنا؟', 2),
+('communication', 'Do we listen actively when the other person is speaking?', 'Écoutons-nous activement quand l''autre personne parle?', 'هل نستمع بشكل فعّال عندما يتحدث الطرف الآخر؟', 3),
+('communication', 'Do we rarely misunderstand each other?', 'Nous comprenons-nous rarement mal?', 'هل نادرًا ما نفهم بعضنا بشكل خاطئ؟', 4),
+('values', 'Do we share similar core values about family and relationships?', 'Partageons-nous des valeurs fondamentales similaires sur la famille et les relations?', 'هل نشارك قيمًا جوهرية متشابهة حول الأسرة والعلاقات؟', 5),
+('values', 'Are we aligned on our long-term life goals and aspirations?', 'Sommes-nous alignés sur nos objectifs de vie à long terme?', 'هل نحن متّفقون على أهداف حياتنا طويلة الأمد؟', 6),
+('values', 'Do we have similar views on what matters most in life?', 'Avons-nous des points de vue similaires sur ce qui compte le plus?', 'هل لدينا وجهات نظر متشابهة حول ما يهمّ أكثر في الحياة؟', 7),
+('lifestyle', 'Do we enjoy spending quality time together on weekends?', 'Aimons-nous passer du temps de qualité ensemble le week-end?', 'هل نستمتع بقضاء وقت ممتع معًا في عطلات نهاية الأسبوع؟', 8),
+('lifestyle', 'Do we have compatible daily routines and habits?', 'Avons-nous des routines quotidiennes et des habitudes compatibles?', 'هل لدينا روتين يومي وعادات متوافقة؟', 9),
+('lifestyle', 'Do we support each other''s personal hobbies and interests?', 'Soutenons-nous les hobbies et intérêts personnels de l''un et l''autre?', 'هل ندعم الهوايات والاهتمامات الشخصية لبعضنا؟', 10),
+('intimacy', 'Do we feel emotionally connected and close?', 'Nous sentons-nous émotionnellement connectés et proches?', 'هل نشعر بارتباط عاطفي وقرب؟', 11),
+('intimacy', 'Are we satisfied with our physical affection?', 'Sommes-nous satisfaits de notre affection physique?', 'هل راضون عن تعبيراتنا الجسدية عن الحب؟', 12),
+('finances', 'Do we have similar attitudes toward saving and spending?', 'Avons-nous des attitudes similaires vers l''épargne et les dépenses?', 'هل لدينا مواقف متشابهة تجاه الادخار والإنفاق؟', 13),
+('finances', 'Are we open and honest about financial matters?', 'Sommes-nous ouverts et honnêtes sur les questions financières?', 'هل نحن مفتوحون وصادقون في Matters المالية؟', 14),
+('children', 'Do we agree on whether or not to have children?', 'Sommes-nous d''accord sur le fait d''avoir des enfants ou non?', 'هل نتفق على ما إذا كان لدينا أطفال أم لا؟', 15),
+('children', 'Do we share similar ideas about parenting styles?', 'Partageons-nous des idées similaires sur les styles d''éducation?', 'هل نشارك أفكارًا متشابهة حول أساليب تربية الأطفال؟', 16),
+('marriage', 'Do we have similar expectations about marriage?', 'Avons-nous des attentes similaires sur le mariage?', 'هل لدينا توقعات متشابهة حول الزواج؟', 17),
+('marriage', 'Are we on the same page about our future together?', 'Sommes-nous sur la même longueur d''onde concernant notre avenir ensemble?', 'هل نحن على نفس التوافق بشأن مستقبلنا معًا؟', 18)
 ) as v(category, text_en, text_fr, text_ar, order_index)
 where not exists (select 1 from questions limit 1);
