@@ -2,8 +2,8 @@
 create or replace function compute_results(p_session_id uuid)
 returns void as $$
 declare
-  v_host_id uuid;
-  v_partner_id uuid;
+  v_host_id text;
+  v_partner_id text;
   v_overall int;
   v_comm int;
   v_vals int;
