@@ -1,15 +1,24 @@
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
-
-const CATEGORIES = [
-  { name: 'Values', score: 85, color: 'bg-primary' },
-  { name: 'Communication', score: 60, color: 'bg-secondary' },
-  { name: 'Lifestyle', score: 75, color: 'bg-primary-container' },
-]
+import { useResults } from '@/hooks/useSupabase'
 
 export function Results() {
   const navigate = useNavigate()
+  const sessionId = localStorage.getItem('aura_session_id') ?? ''
+  const { result, loading } = useResults(sessionId || null)
+
+  const score = result?.overall_score ?? 73
+  const categories = [
+    { name: 'Communication', score: result?.communication_score ?? 60, color: 'bg-secondary' },
+    { name: 'Values', score: result?.values_score ?? 85, color: 'bg-primary' },
+    { name: 'Lifestyle', score: result?.lifestyle_score ?? 75, color: 'bg-primary-container' },
+  ]
+
+  const alignment = result?.biggest_alignment
+    ?? 'You both deeply value Family & Connection, forming a strong foundation for future planning.'
+  const gap = result?.biggest_gap
+    ?? 'Your approaches to Conflict Resolution differ; proactive communication will be key.'
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -23,11 +32,15 @@ export function Results() {
               <div className="absolute w-48 h-48 bg-primary-container rounded-full blur-3xl opacity-20 translate-x-12 translate-y-12" />
             </div>
             <div className="w-48 h-48 rounded-full border-4 border-secondary-container flex flex-col items-center justify-center bg-surface relative z-10 shadow-[0_0_40px_rgba(199,175,253,0.3)]">
-              <span className="text-[40px] leading-[48px] tracking-[-0.02em] font-bold text-primary">73%</span>
-              <span className="text-xs text-on-surface-variant uppercase tracking-widest mt-1">Compatibility</span>
+              <span className="text-[40px] leading-[48px] tracking-[-0.02em] font-bold text-primary">
+                {score}%
+              </span>
+              <span className="text-xs text-on-surface-variant uppercase tracking-widest mt-1">
+                Compatibility
+              </span>
             </div>
             <h1 className="text-[28px] leading-[36px] font-semibold text-on-surface mt-6 text-center">
-              Strong Match
+              {score >= 80 ? 'Perfect Match' : score >= 60 ? 'Strong Match' : score >= 40 ? 'Growing Together' : 'Room to Grow'}
             </h1>
             <p className="text-base text-on-surface-variant text-center max-w-md mt-2">
               Your auras blend beautifully, suggesting a deep understanding and shared perspective on life's key themes.
@@ -37,7 +50,7 @@ export function Results() {
           <section className="bg-surface shadow-soft rounded-xl p-4 border border-surface-variant">
             <h2 className="text-xl font-semibold mb-4 text-on-surface">Category Breakdown</h2>
             <div className="flex flex-col gap-3">
-              {CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <div key={cat.name}>
                   <div className="flex justify-between items-end mb-2">
                     <span className="text-sm font-medium text-on-surface">{cat.name}</span>
@@ -62,9 +75,7 @@ export function Results() {
                 </span>
                 <h3 className="text-sm font-medium text-on-surface">Biggest Alignment</h3>
               </div>
-              <p className="text-base text-on-surface">
-                You both deeply value <strong>Family & Connection</strong>, forming a strong foundation for future planning.
-              </p>
+              <p className="text-base text-on-surface">{alignment}</p>
             </div>
 
             <div className="bg-surface rounded-xl p-4 border border-surface-variant shadow-soft hover:shadow-[0_4px_24px_rgba(0,0,0,0.1)] transition-shadow">
@@ -72,9 +83,7 @@ export function Results() {
                 <span className="material-symbols-outlined text-outline">psychology</span>
                 <h3 className="text-sm font-medium text-on-surface">Area for Growth</h3>
               </div>
-              <p className="text-base text-on-surface">
-                Your approaches to <strong>Conflict Resolution</strong> differ; proactive communication will be key.
-              </p>
+              <p className="text-base text-on-surface">{gap}</p>
             </div>
           </section>
 

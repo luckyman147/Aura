@@ -1,8 +1,23 @@
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
+import { useEffect, useState } from 'react'
+
+function getOrCreatePlayerId(): string {
+  let id = localStorage.getItem('aura_player_id')
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem('aura_player_id', id)
+  }
+  return id
+}
 
 export function Home() {
   const navigate = useNavigate()
+  const [playerId, setPlayerId] = useState('')
+
+  useEffect(() => {
+    setPlayerId(getOrCreatePlayerId())
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col bg-romantic-gradient relative overflow-hidden">
@@ -38,6 +53,12 @@ export function Home() {
             Join Session
           </button>
         </div>
+
+        {playerId && (
+          <p className="text-xs text-on-surface-variant/50 mt-8">
+            Player ID: {playerId.slice(0, 8)}...
+          </p>
+        )}
       </main>
     </div>
   )

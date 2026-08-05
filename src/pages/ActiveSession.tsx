@@ -1,36 +1,86 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
+import { useQuestions, useAnswers } from '@/hooks/useSupabase'
+import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
+import type { AnswerValue, AppLanguage, Category } from '@/types/database'
 
-type Answer = 'agree' | 'neutral' | 'disagree' | null
+function getOrCreatePlayerId(): string {
+  return localStorage.getItem('aura_player_id') ?? ''
+}
 
-const QUESTIONS = [
-  { id: 1, category: 'Communication', text: 'We handle disagreements in a healthy and constructive way.' },
-  { id: 2, category: 'Communication', text: 'We feel comfortable expressing our true feelings to each other.' },
-  { id: 3, category: 'Values', text: 'We share similar core values about family and relationships.' },
-  { id: 4, category: 'Lifestyle', text: 'We enjoy spending quality time together on weekends.' },
-  { id: 5, category: 'Values', text: 'We are aligned on our long-term life goals and aspirations.' },
-]
+function getSessionCode(): string {
+  return localStorage.getItem('aura_session_code') ?? ''
+}
+
+function getLanguage(): AppLanguage {
+  return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
+}
 
 export function ActiveSession() {
   const navigate = useNavigate()
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [answers, setAnswers] = useState<Record<number, Answer>>({})
+  const [currentIdx, setCurrentIdx] = useState(0)
+  const [localAnswers, setLocalAnswers] = useState<Record<string, AnswerValue>>({})
 
-  const question = QUESTIONS[currentQuestion]
-  const progress = ((currentQuestion + 1) / QUESTIONS.length) * 100
+  const sessionCode = getSessionCode()
+  const playerId = getOrCreatePlayerId()
+  const language = getLanguage()
+  const categories: Category[] = ['communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage']
 
-  const handleAnswer = (answer: Answer) => {
-    setAnswers((prev) => ({ ...prev, [question.id]: answer }))
+  const { questions, loading: questionsLoading } = useQuestions(categories, language)
+  const { answers: dbAnswers, submitAnswer } = useAnswers(
+    localStorage.getItem('aura_session_id') ?? null,
+    playerId,
+  )
+
+  const question = questions[currentIdx]
+  const totalQuestions = questions.length
+  const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
+
+  const handleAnswer = useCallback(async (answer: AnswerValue) => {
+    if (!question) return
+
+    setLocalAnswers((prev) => ({ ...prev, [question.id]: answer }))
+
+    await submitAnswer(question.id, answer)
 
     setTimeout(() => {
-      if (currentQuestion < QUESTIONS.length - 1) {
-        setCurrentQuestion((prev) => prev + 1)
+      if (currentIdx < totalQuestions - 1) {
+        setCurrentIdx((prev) => prev + 1)
       } else {
         navigate('/session/results')
       }
     }, 300)
+  }, [question, currentIdx, totalQuestions, submitAnswer, navigate])
+
+  const handleSkip = useCallback(() => {
+    handleAnswer('skipped')
+  }, [handleAnswer])
+
+  if (questionsLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Header />
+        <span className="material-symbols-outlined animate-spin text-primary text-[48px]">progress_activity</span>
+        <p className="text-on-surface-variant mt-4">Loading questions...</p>
+      </div>
+    )
   }
+
+  if (!question) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Header />
+        <p className="text-on-surface-variant">No questions available.</p>
+        <button onClick={() => navigate('/')} className="mt-4 text-primary underline">
+          Go Home
+        </button>
+      </div>
+    )
+  }
+
+  const questionText = getQuestionText(question, language)
+  const currentCategory = question.category
 
   return (
     <div className="min-h-screen flex flex-col items-center">
@@ -40,10 +90,10 @@ export function ActiveSession() {
         <div className="w-full flex flex-col gap-3 mt-4">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-on-surface-variant">
-              {currentQuestion + 1}/{QUESTIONS.length}
+              {currentIdx + 1}/{totalQuestions}
             </span>
             <span className="text-sm font-medium text-secondary uppercase tracking-widest bg-secondary-container/30 px-3 py-1 rounded-full">
-              {question.category}
+              {CATEGORY_LABELS[currentCategory][language]}
             </span>
           </div>
           <div className="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden mt-1">
@@ -56,7 +106,7 @@ export function ActiveSession() {
 
         <div className="flex-1 flex flex-col justify-center items-center py-8 my-8 text-center">
           <h2 className="text-[28px] leading-[36px] font-semibold text-on-surface leading-tight mb-6">
-            {question.text}
+            {questionText}
           </h2>
           <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-surface-container-low rounded-full">
             <span className="material-symbols-outlined text-tertiary" style={{ fontSize: '16px' }}>
@@ -69,11 +119,7 @@ export function ActiveSession() {
         <div className="w-full flex justify-between items-center gap-3 mt-auto mb-2">
           <button
             onClick={() => handleAnswer('disagree')}
-            className={`flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border transition-all duration-300 group ${
-              answers[question.id] === 'disagree'
-                ? 'bg-error-container/20 border-error shadow-soft'
-                : 'bg-surface border-outline-variant hover:bg-error-container/20 hover:border-error hover:shadow-soft'
-            }`}
+            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-error-container/20 hover:border-error hover:shadow-soft transition-all duration-300 group"
           >
             <div className="w-12 h-12 rounded-full bg-error-container/30 flex items-center justify-center text-error group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined">close</span>
@@ -83,11 +129,7 @@ export function ActiveSession() {
 
           <button
             onClick={() => handleAnswer('neutral')}
-            className={`flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border transition-all duration-300 group ${
-              answers[question.id] === 'neutral'
-                ? 'bg-surface-variant/50 border-outline shadow-soft'
-                : 'bg-surface border-outline-variant hover:bg-surface-variant/50 hover:border-outline hover:shadow-soft'
-            }`}
+            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-surface-variant/50 hover:border-outline hover:shadow-soft transition-all duration-300 group"
           >
             <div className="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined">remove</span>
@@ -97,11 +139,7 @@ export function ActiveSession() {
 
           <button
             onClick={() => handleAnswer('agree')}
-            className={`flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border transition-all duration-300 group ${
-              answers[question.id] === 'agree'
-                ? 'bg-secondary-container/20 border-secondary shadow-soft'
-                : 'bg-surface border-outline-variant hover:bg-secondary-container/20 hover:border-secondary hover:shadow-soft'
-            }`}
+            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-secondary-container/20 hover:border-secondary hover:shadow-soft transition-all duration-300 group"
           >
             <div className="w-12 h-12 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
               <span className="material-symbols-outlined">check</span>
@@ -109,6 +147,13 @@ export function ActiveSession() {
             <span className="text-sm font-medium text-on-surface">Agree</span>
           </button>
         </div>
+
+        <button
+          onClick={handleSkip}
+          className="w-full mt-3 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-xl hover:bg-surface-variant/30"
+        >
+          Skip Question →
+        </button>
       </main>
     </div>
   )
