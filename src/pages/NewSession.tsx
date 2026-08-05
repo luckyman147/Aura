@@ -65,6 +65,7 @@ export function NewSession() {
     if (data) {
       localStorage.setItem('aura_session_code', data.code)
       localStorage.setItem('aura_session_id', data.id)
+      localStorage.setItem('aura_session_categories', JSON.stringify(selectedCategories))
       localStorage.setItem('aura_player_role', 'host')
       navigate(`/session/wait/${data.code}`)
     }

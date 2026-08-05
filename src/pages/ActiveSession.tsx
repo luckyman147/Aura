@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { useQuestions, useAnswers, useSession, useMessages } from '@/hooks/useSupabase'
+import { useQuestions, useAnswers, useSession, useMessages, updateSessionQuestionIndex, updatePartnerActive } from '@/hooks/useSupabase'
 import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
-import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, Send, MessageCircle } from 'lucide-react'
+import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, ChevronRight, Send, MessageCircle, AlertTriangle } from 'lucide-react'
 import { MessageCircle as MsgCircle, Heart, Leaf, Handshake, PiggyBank, Baby, Diamond } from 'lucide-react'
 
 function getOrCreatePlayerId(): string {
@@ -20,8 +20,8 @@ function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
 }
 
-function getSessionCode(): string {
-  return localStorage.getItem('aura_session_code') ?? ''
+function getSessionId(): string {
+  return localStorage.getItem('aura_session_id') ?? ''
 }
 
 const CATEGORY_LUCIDE: Record<Category, typeof Heart> = {
@@ -36,15 +36,15 @@ const CATEGORY_LUCIDE: Record<Category, typeof Heart> = {
 
 export function ActiveSession() {
   const navigate = useNavigate()
-  const [currentIdx, setCurrentIdx] = useState(0)
   const [answered, setAnswered] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [chatInput, setChatInput] = useState('')
+  const [partnerLeft, setPartnerLeft] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
-  const sessionCode = getSessionCode()
+  const sessionId = getSessionId()
 
   const categories: Category[] = (() => {
     const stored = localStorage.getItem('aura_session_categories')
@@ -55,44 +55,81 @@ export function ActiveSession() {
   })()
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
-  const { session } = useSession(sessionCode || null)
-  const { submitAnswer } = useAnswers(
-    localStorage.getItem('aura_session_id') ?? null,
-    playerId,
-  )
-  const { messages, sendMessage } = useMessages(
-    localStorage.getItem('aura_session_id') ?? null,
-  )
+  const { session } = useSession(sessionId || null)
+  const { submitAnswer } = useAnswers(sessionId || null, playerId)
+  const { messages, sendMessage } = useMessages(sessionId || null)
 
-  const isOnline = session?.mode === 'online'
-  const question = questions[currentIdx]
+  const currentIdx = session?.current_question_index ?? 0
   const totalQuestions = questions.length
   const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
+  const question = questions[currentIdx]
+  const isOnline = session?.mode === 'online'
+  const amHost = localStorage.getItem('aura_player_role') === 'host'
+  const myField = amHost ? 'host_id' : 'partner_id'
+  const isMySession = session && session[myField] === playerId
 
+  // Detect partner leaving
+  useEffect(() => {
+    if (!session || !isMySession) return
+    if (session.partner_active === false && session.status === 'active') {
+      setPartnerLeft(true)
+    }
+  }, [session?.partner_active, session?.status])
+
+  // Mark myself as active on mount, inactive on leave
+  useEffect(() => {
+    if (!sessionId || !isMySession) return
+    updatePartnerActive(sessionId, true)
+
+    const handleBeforeUnload = () => {
+      navigator.sendBeacon('/session/leave', new Blob([]))
+      updatePartnerActive(sessionId, false)
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      updatePartnerActive(sessionId, false)
+    }
+  }, [sessionId, isMySession])
+
+  // Sync chat
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const syncIndex = useCallback(async (newIndex: number) => {
+    if (!sessionId || !isMySession) return
+    await updateSessionQuestionIndex(sessionId, newIndex)
+  }, [sessionId, isMySession])
+
   const handleAnswer = useCallback(async (answer: AnswerValue) => {
-    if (!question || answered) return
+    if (!question || answered || !isMySession) return
     setAnswered(true)
 
     await submitAnswer(question.id, answer)
 
-    setTimeout(() => {
+    setTimeout(async () => {
       if (currentIdx < totalQuestions - 1) {
-        setCurrentIdx((prev) => prev + 1)
+        await syncIndex(currentIdx + 1)
         setAnswered(false)
       } else {
         navigate('/session/results')
       }
     }, 400)
-  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered])
+  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered, isMySession, syncIndex])
 
-  const handlePrev = () => {
-    if (currentIdx > 0) {
-      setCurrentIdx((prev) => prev - 1)
+  const handlePrev = async () => {
+    if (currentIdx > 0 && isMySession) {
       setAnswered(false)
+      await syncIndex(currentIdx - 1)
+    }
+  }
+
+  const handleNext = async () => {
+    if (currentIdx < totalQuestions - 1 && isMySession) {
+      setAnswered(false)
+      await syncIndex(currentIdx + 1)
     }
   }
 
@@ -109,9 +146,13 @@ export function ActiveSession() {
     }
   }
 
-  const handleLeaveSession = () => {
+  const handleLeaveSession = async () => {
+    if (sessionId && isMySession) {
+      await updatePartnerActive(sessionId, false)
+    }
     localStorage.removeItem('aura_session_code')
     localStorage.removeItem('aura_session_id')
+    localStorage.removeItem('aura_session_categories')
     localStorage.removeItem('aura_player_role')
     navigate('/')
   }
@@ -144,6 +185,23 @@ export function ActiveSession() {
   return (
     <div className="min-h-dvh flex flex-col bg-background">
       <Header />
+
+      {/* Partner Left Banner */}
+      {partnerLeft && (
+        <div className="bg-error-container/20 border-b border-error/20 px-4 py-3 flex items-center gap-3 shrink-0">
+          <AlertTriangle className="w-5 h-5 text-error shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-on-error-container">Partner left the quiz</p>
+            <p className="text-xs text-on-error-container/70">They disconnected from the session</p>
+          </div>
+          <button
+            onClick={handleLeaveSession}
+            className="text-xs font-semibold text-error px-3 py-1.5 rounded-lg bg-error/10 hover:bg-error/20 transition-colors shrink-0"
+          >
+            Leave
+          </button>
+        </div>
+      )}
 
       <main className="flex-1 w-full max-w-md mx-auto flex flex-col px-4 sm:px-5 pt-3 pb-6 overflow-hidden">
         {/* Progress */}
@@ -231,6 +289,12 @@ export function ActiveSession() {
           >
             <SkipForward className="w-4 h-4" />
             Skip
+          </button>
+          <button
+            onClick={handleNext}
+            className="py-3 px-4 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all"
+          >
+            <ChevronRight className="w-4 h-4" />
           </button>
           {isOnline && (
             <button

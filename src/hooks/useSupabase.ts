@@ -257,6 +257,20 @@ export function useMessages(sessionId: string | null) {
   return { messages, loading, sendMessage }
 }
 
+export async function updateSessionQuestionIndex(sessionId: string, index: number) {
+  return supabase
+    .from('sessions')
+    .update({ current_question_index: index })
+    .eq('id', sessionId)
+}
+
+export async function updatePartnerActive(sessionId: string, active: boolean) {
+  return supabase
+    .from('sessions')
+    .update({ partner_active: active })
+    .eq('id', sessionId)
+}
+
 export function computeResults(sessionId: string) {
   return supabase.rpc('compute_results' as never, {
     p_session_id: sessionId,

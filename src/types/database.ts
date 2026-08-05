@@ -31,6 +31,8 @@ export interface Session {
   status: SessionStatus
   host_id: string
   partner_id: string | null
+  current_question_index: number
+  partner_active: boolean
   created_at: string
   updated_at: string
 }
