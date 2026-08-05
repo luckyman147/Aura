@@ -127,6 +127,13 @@ export function JoinSession() {
               'Join Session'
             )}
           </button>
+          <button
+            onClick={() => navigate('/')}
+            className="w-full h-12 bg-surface text-on-surface-variant text-sm font-medium rounded-2xl flex items-center justify-center gap-2 border border-surface-variant hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Return Home
+          </button>
         </div>
       </main>
 
