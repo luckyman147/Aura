@@ -47,7 +47,7 @@ export function useSession(code: string | null) {
     return () => { supabase.removeChannel(channel) }
   }, [code])
 
-  // Polling fallback — covers SECURITY DEFINER + connection issues
+  // Polling fallback — fast 1s poll while waiting for partner
   useEffect(() => {
     if (!code || !session || session.status !== 'waiting') return
     const interval = setInterval(async () => {
@@ -60,7 +60,7 @@ export function useSession(code: string | null) {
         setSession(data)
         clearInterval(interval)
       }
-    }, 2000)
+    }, 1000)
     return () => clearInterval(interval)
   }, [code, session?.status])
 
@@ -181,18 +181,34 @@ export async function createSession(
 export async function joinSession(code: string, partnerId: string) {
   const normalizedCode = code.toUpperCase().trim()
 
-  const { data, error } = await supabase
-    .rpc('join_session', {
-      p_code: normalizedCode,
-      p_partner_id: partnerId,
-    })
+  // Step 1: Fetch the session (client-side read via RLS)
+  const { data: session, error: fetchError } = await supabase
+    .from('sessions')
+    .select('*')
+    .eq('code', normalizedCode)
     .single()
 
-  if (error) {
-    return { data: null, error: { message: error.message || 'Session not found or already full' } }
+  if (fetchError || !session) {
+    return { data: null, error: { message: 'Session not found' } }
   }
 
-  return { data: data as Session, error: null }
+  if (session.status !== 'waiting' || session.partner_id) {
+    return { data: null, error: { message: 'Session is full or already started' } }
+  }
+
+  // Step 2: Update directly via client (fires Realtime!)
+  const { data: updated, error: updateError } = await supabase
+    .from('sessions')
+    .update({ partner_id: partnerId, status: 'active' })
+    .eq('id', session.id)
+    .select()
+    .single()
+
+  if (updateError) {
+    return { data: null, error: { message: 'Failed to join session' } }
+  }
+
+  return { data: updated as Session, error: null }
 }
 
 export function getSessionInviteUrl(code: string): string {
