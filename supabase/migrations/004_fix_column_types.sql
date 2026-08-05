@@ -1,14 +1,20 @@
--- Fix: Change host_id/partner_id from uuid to text (no auth, anonymous players)
+-- Fix: Change host_id/partner_id from uuid to text
 -- Run this in Supabase SQL Editor
 
--- 1. Drop the join_session function first (depends on sessions table)
+-- 1. Drop everything that depends on the columns
+drop policy if exists "Session members can update" on sessions;
+drop policy if exists "sessions_update" on sessions;
 drop function if exists join_session(text, text);
 
 -- 2. Alter columns from uuid to text
 alter table sessions alter column host_id type text using host_id::text;
 alter table sessions alter column partner_id type text using partner_id::text;
 
--- 3. Recreate join_session function
+-- 3. Recreate update policy
+create policy "sessions_update" on sessions
+  for update using (true);
+
+-- 4. Recreate join_session function
 create or replace function join_session(p_code text, p_partner_id text)
 returns sessions as $$
 declare
