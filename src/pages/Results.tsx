@@ -1,13 +1,24 @@
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { useResults } from '@/hooks/useSupabase'
-import { Share2, RotateCcw, Star, Brain, Trophy, TrendingUp } from 'lucide-react'
+import { useResults, computeResults } from '@/hooks/useSupabase'
+import { useEffect, useState } from 'react'
+import { Share2, RotateCcw, Star, Brain, Trophy, TrendingUp, Loader2 } from 'lucide-react'
 
 export function Results() {
   const navigate = useNavigate()
   const sessionId = localStorage.getItem('aura_session_id') ?? ''
-  const { result } = useResults(sessionId || null)
+  const { result, loading } = useResults(sessionId || null)
+  const [computing, setComputing] = useState(false)
+
+  useEffect(() => {
+    if (!sessionId) return
+    setComputing(true)
+    ;(async () => {
+      try { await computeResults(sessionId) } catch { /* ignore */ }
+      setComputing(false)
+    })()
+  }, [sessionId])
 
   const score = result?.overall_score ?? 73
   const categories = [
@@ -20,6 +31,16 @@ export function Results() {
     ?? 'You both deeply value Family & Connection, forming a strong foundation.'
   const gap = result?.biggest_gap
     ?? 'Your approaches to Conflict Resolution differ; proactive communication will be key.'
+
+  if (loading || computing) {
+    return (
+      <div className="min-h-dvh bg-background flex flex-col items-center justify-center">
+        <Header />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <p className="text-sm text-on-surface-variant mt-3">Computing your results...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">

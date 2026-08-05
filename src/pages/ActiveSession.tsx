@@ -1,22 +1,31 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { useQuestions, useAnswers } from '@/hooks/useSupabase'
-import { getQuestionText, CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/database'
+import { useQuestions, useAnswers, useSession, useMessages } from '@/hooks/useSupabase'
+import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
-import { Loader2, SkipForward, X, Minus, Check, Clock } from 'lucide-react'
-import { MessageCircle, Heart, Leaf, Handshake, PiggyBank, Baby, Diamond } from 'lucide-react'
+import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, Send, MessageCircle } from 'lucide-react'
+import { MessageCircle as MsgCircle, Heart, Leaf, Handshake, PiggyBank, Baby, Diamond } from 'lucide-react'
 
 function getOrCreatePlayerId(): string {
-  return localStorage.getItem('aura_player_id') ?? ''
+  let id = localStorage.getItem('aura_player_id')
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem('aura_player_id', id)
+  }
+  return id
 }
 
 function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
 }
 
+function getSessionCode(): string {
+  return localStorage.getItem('aura_session_code') ?? ''
+}
+
 const CATEGORY_LUCIDE: Record<Category, typeof Heart> = {
-  communication: MessageCircle,
+  communication: MsgCircle,
   values: Heart,
   lifestyle: Leaf,
   intimacy: Handshake,
@@ -29,20 +38,33 @@ export function ActiveSession() {
   const navigate = useNavigate()
   const [currentIdx, setCurrentIdx] = useState(0)
   const [answered, setAnswered] = useState(false)
+  const [chatOpen, setChatOpen] = useState(false)
+  const [chatInput, setChatInput] = useState('')
+  const chatEndRef = useRef<HTMLDivElement>(null)
 
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
+  const sessionCode = getSessionCode()
   const categories: Category[] = ['communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage']
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
+  const { session } = useSession(sessionCode || null)
   const { submitAnswer } = useAnswers(
     localStorage.getItem('aura_session_id') ?? null,
     playerId,
   )
+  const { messages, sendMessage } = useMessages(
+    localStorage.getItem('aura_session_id') ?? null,
+  )
 
+  const isOnline = session?.mode === 'online'
   const question = questions[currentIdx]
   const totalQuestions = questions.length
   const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   const handleAnswer = useCallback(async (answer: AnswerValue) => {
     if (!question || answered) return
@@ -59,6 +81,33 @@ export function ActiveSession() {
       }
     }, 400)
   }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered])
+
+  const handlePrev = () => {
+    if (currentIdx > 0) {
+      setCurrentIdx((prev) => prev - 1)
+      setAnswered(false)
+    }
+  }
+
+  const handleSendMessage = async () => {
+    if (!chatInput.trim()) return
+    await sendMessage(playerId, chatInput)
+    setChatInput('')
+  }
+
+  const handleSendKey = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
+  const handleLeaveSession = () => {
+    localStorage.removeItem('aura_session_code')
+    localStorage.removeItem('aura_session_id')
+    localStorage.removeItem('aura_player_role')
+    navigate('/')
+  }
 
   if (questionsLoading) {
     return (
@@ -89,10 +138,18 @@ export function ActiveSession() {
     <div className="min-h-dvh flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 w-full max-w-md mx-auto flex flex-col px-5 pt-3 pb-6">
+      <main className="flex-1 w-full max-w-md mx-auto flex flex-col px-4 sm:px-5 pt-3 pb-6 overflow-hidden">
         {/* Progress */}
-        <div className="mb-4">
+        <div className="mb-4 shrink-0">
           <div className="flex justify-between items-center mb-2">
+            <button
+              onClick={handlePrev}
+              disabled={currentIdx === 0}
+              className="flex items-center gap-1 text-on-surface-variant hover:text-on-surface disabled:opacity-30 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-xs font-semibold">Back</span>
+            </button>
             <span className="text-xs font-semibold text-on-surface-variant">
               {currentIdx + 1} / {totalQuestions}
             </span>
@@ -112,62 +169,150 @@ export function ActiveSession() {
         </div>
 
         {/* Question */}
-        <div className="flex-1 flex flex-col justify-center items-center py-6 my-4 text-center">
-          <div className="inline-flex items-center gap-1.5 mb-6 px-3 py-1.5 bg-surface-container-low rounded-full">
+        <div className="flex-1 min-h-0 flex flex-col justify-center items-center py-4 my-2 text-center overflow-y-auto">
+          <div className="inline-flex items-center gap-1.5 mb-4 px-3 py-1.5 bg-surface-container-low rounded-full shrink-0">
             <Clock className="w-3.5 h-3.5 text-on-surface-variant" />
             <span className="text-[11px] font-medium text-on-surface-variant">Your turn</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-on-surface leading-snug px-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-on-surface leading-snug px-2 break-words w-full">
             {questionText}
           </h2>
         </div>
 
         {/* Answer Buttons */}
-        <div className="grid grid-cols-3 gap-3 mb-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 shrink-0">
           <button
             onClick={() => handleAnswer('disagree')}
             disabled={answered}
-            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-error-container/15 hover:border-error/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
+            className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-error-container/15 hover:border-error/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
-            <div className="w-11 h-11 rounded-full bg-error-container/30 flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-error-container/30 flex items-center justify-center">
               <X className="w-5 h-5 text-error" strokeWidth={2.5} />
             </div>
-            <span className="text-xs font-semibold text-on-surface">Disagree</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-on-surface">Disagree</span>
           </button>
 
           <button
             onClick={() => handleAnswer('neutral')}
             disabled={answered}
-            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-surface-variant/50 hover:border-outline active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
+            className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-surface-variant/50 hover:border-outline active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
-            <div className="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface-container-high flex items-center justify-center">
               <Minus className="w-5 h-5 text-on-surface-variant" strokeWidth={2.5} />
             </div>
-            <span className="text-xs font-semibold text-on-surface">Neutral</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-on-surface">Neutral</span>
           </button>
 
           <button
             onClick={() => handleAnswer('agree')}
             disabled={answered}
-            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-secondary-container/15 hover:border-secondary/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
+            className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-secondary-container/15 hover:border-secondary/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
-            <div className="w-11 h-11 rounded-full bg-secondary-container/40 flex items-center justify-center">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-secondary-container/40 flex items-center justify-center">
               <Check className="w-5 h-5 text-secondary" strokeWidth={2.5} />
             </div>
-            <span className="text-xs font-semibold text-on-surface">Agree</span>
+            <span className="text-[11px] sm:text-xs font-semibold text-on-surface">Agree</span>
           </button>
         </div>
 
-        {/* Skip */}
-        <button
-          onClick={() => handleAnswer('skipped')}
-          disabled={answered}
-          className="w-full py-3.5 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all disabled:opacity-50"
-        >
-          <SkipForward className="w-4 h-4" />
-          Skip Question
-        </button>
+        {/* Bottom actions */}
+        <div className="flex gap-2 shrink-0">
+          <button
+            onClick={() => handleAnswer('skipped')}
+            disabled={answered}
+            className="flex-1 py-3 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all disabled:opacity-50"
+          >
+            <SkipForward className="w-4 h-4" />
+            Skip
+          </button>
+          {isOnline && (
+            <button
+              onClick={() => setChatOpen(!chatOpen)}
+              className="py-3 px-4 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all relative"
+            >
+              <MessageCircle className="w-4 h-4" />
+              Chat
+              {messages.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {messages.length > 9 ? '9+' : messages.length}
+                </span>
+              )}
+            </button>
+          )}
+          <button
+            onClick={handleLeaveSession}
+            className="py-3 px-4 flex items-center justify-center gap-2 text-on-surface-variant hover:text-error text-sm font-medium rounded-2xl hover:bg-error-container/10 active:scale-[0.98] transition-all"
+          >
+            <X className="w-4 h-4" />
+            Leave
+          </button>
+        </div>
       </main>
+
+      {/* Chat Drawer */}
+      {isOnline && chatOpen && (
+        <div className="fixed inset-x-0 bottom-0 z-50 bg-surface border-t border-surface-variant rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.15)] max-h-[60vh] flex flex-col">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-surface-variant">
+            <div className="flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-primary" />
+              <span className="text-sm font-bold text-on-surface">Chat with Partner</span>
+            </div>
+            <button
+              onClick={() => setChatOpen(false)}
+              className="w-8 h-8 rounded-full bg-surface-variant/50 flex items-center justify-center hover:bg-surface-variant transition-colors"
+            >
+              <X className="w-4 h-4 text-on-surface-variant" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 py-3 space-y-3 min-h-[120px] max-h-[35vh]">
+            {messages.length === 0 && (
+              <p className="text-center text-xs text-on-surface-variant py-4">
+                Send a message to your partner while you play...
+              </p>
+            )}
+            {messages.map((msg) => {
+              const isMe = msg.sender_id === playerId
+              return (
+                <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
+                      isMe
+                        ? 'bg-primary text-on-primary rounded-br-md'
+                        : 'bg-surface-container-high text-on-surface rounded-bl-md'
+                    }`}
+                  >
+                    <p className="break-words">{msg.text}</p>
+                    <p className={`text-[9px] mt-1 ${isMe ? 'text-on-primary/60' : 'text-on-surface-variant/60'}`}>
+                      {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+            <div ref={chatEndRef} />
+          </div>
+
+          <div className="px-4 py-3 border-t border-surface-variant flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={handleSendKey}
+              placeholder="Type a message..."
+              maxLength={500}
+              className="flex-1 bg-surface-container-low rounded-xl px-4 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant/40 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={!chatInput.trim()}
+              className="w-10 h-10 bg-primary text-on-primary rounded-xl flex items-center justify-center shrink-0 hover:opacity-90 active:scale-95 transition-all disabled:opacity-40"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

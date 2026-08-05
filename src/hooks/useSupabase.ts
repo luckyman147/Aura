@@ -5,6 +5,7 @@ import type {
   Question,
   Answer,
   Result,
+  Message,
   Category,
   AnswerValue,
   AppLanguage,
@@ -178,6 +179,52 @@ export async function joinSession(code: string, partnerId: string) {
 export function getSessionInviteUrl(code: string): string {
   const base = typeof window !== 'undefined' ? window.location.origin : 'https://aura-app.netlify.app'
   return `${base}/session/join?code=${code}`
+}
+
+export function useMessages(sessionId: string | null) {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!sessionId) { setLoading(false); return }
+
+    supabase
+      .from('messages')
+      .select('*')
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: true })
+      .then(({ data }) => {
+        setMessages(data ?? [])
+        setLoading(false)
+      })
+  }, [sessionId])
+
+  useEffect(() => {
+    if (!sessionId) return
+    const channel = supabase
+      .channel(`messages:${sessionId}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `session_id=eq.${sessionId}`,
+      }, (payload) => {
+        setMessages((prev) => [...prev, payload.new as Message])
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [sessionId])
+
+  const sendMessage = useCallback(async (senderId: string, text: string) => {
+    if (!sessionId || !text.trim()) return
+    await supabase.from('messages').insert({
+      session_id: sessionId,
+      sender_id: senderId,
+      text: text.trim(),
+    })
+  }, [sessionId])
+
+  return { messages, loading, sendMessage }
 }
 
 export function computeResults(sessionId: string) {
