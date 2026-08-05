@@ -5,6 +5,10 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import { createSession } from '@/hooks/useSupabase'
 import { CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/database'
 import type { Category, AppLanguage } from '@/types/database'
+import {
+  Clock, Zap, Globe, ArrowRight, Check, Loader2,
+  MessageCircle, Heart, Leaf, Handshake, PiggyBank, Baby, Diamond,
+} from 'lucide-react'
 
 type SessionType = 'online' | 'realtime'
 
@@ -12,10 +16,20 @@ const ALL_CATEGORIES: Category[] = [
   'communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage',
 ]
 
-const FLAGS: Record<AppLanguage, string> = {
-  en: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDdcoEPbmrfhGjp7kmanpMEdoVWEhHgZ5FdwcJ-mUdg0gXH_P7QA1iHFYIKyQ28AZjJpnsKHwpJ0kVley1Qbf6sqlT57dYw1_dvufy2Qy-alkkMk3Fr1zrBczqT2OJ91plldVyvrrL-08S9FCynkWKmxcUDWBMSf0MV1xzdAbJi-9Q8fYxgM7ZiRluhwLkQjZwFWemvoS9WAfdvYJCGuB5HfoXclXFSiNtP5NgE5B6Ul075he_6wt3hEw',
-  fr: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxVNNXqH1OcUtaezbZVc2q7Y3nDZSLCvO3yu8mCa5WmZdQ7K8o_YtMShyBp5qvoXoJDUJUL2Y_22_-8L8GHvPYgQh6k9HiGtE49VkXuBc7Uj7dDLJTu-Aqynnl0Bc3WGkyZm5PalSxM81t_B1vBRNnqPwrM5iXHjSiHiE1HBIbvqwoZiQFG9m8ie-Xrb4D4DmI1Qnw1HmBwDmXxQ1QM6pv14I0Tdb0f7z5PvUWQCuHuJ2hPlOuJKuzEQ',
-  ar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBgwFJ12-UHgPmAV3XJOoYWsbxr3jPelKbEko3SJEvvEaSPvXQVG6rR7MOIWTsqMgTrukF0Q66s_XWakGyQtXqWh4cr9r8ft-N3p6E8gLhQ5cmLs6fmyZGTDckjiUiOw0kYDTkD_xUnwJjsWaznD1v4lIeA7zBJo3B43JdK5juulOD5Ma3lrNjdkrI6E7R2s9ivqPwnfPkiyoEKP3s4c7Q04UJvTGQemamEfZReWV6gbfXFqs2QBFFebw',
+const CATEGORY_LUCIDE: Record<Category, typeof Heart> = {
+  communication: MessageCircle,
+  values: Heart,
+  lifestyle: Leaf,
+  intimacy: Handshake,
+  finances: PiggyBank,
+  children: Baby,
+  marriage: Diamond,
+}
+
+const FLAGS: Record<AppLanguage, { label: string; emoji: string }> = {
+  en: { label: 'English', emoji: '🇬🇧' },
+  fr: { label: 'Français', emoji: '🇫🇷' },
+  ar: { label: 'العربية', emoji: '🇸🇦' },
 }
 
 function getOrCreatePlayerId(): string {
@@ -38,19 +52,19 @@ export function NewSession() {
 
   const toggleCategory = (cat: Category) => {
     setSelectedCategories((prev) =>
-      prev.includes(cat)
-        ? prev.filter((c) => c !== cat)
-        : [...prev, cat]
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     )
   }
 
   const handleCreate = async () => {
     if (selectedCategories.length === 0 || creating) return
     setCreating(true)
+    localStorage.setItem('aura_language', language)
     const playerId = getOrCreatePlayerId()
     const { data } = await createSession(sessionType, language, selectedCategories, playerId)
     if (data) {
       localStorage.setItem('aura_session_code', data.code)
+      localStorage.setItem('aura_session_id', data.id)
       localStorage.setItem('aura_player_role', 'host')
       navigate(`/session/wait/${data.code}`)
     }
@@ -58,132 +72,139 @@ export function NewSession() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       <Header />
 
-      <main className="flex-grow flex flex-col items-center pt-8 pb-24 px-5 w-full max-w-3xl mx-auto">
-        <div className="text-center w-full mb-8">
-          <h2 className="text-[28px] leading-[36px] font-semibold text-on-surface mb-2">
-            How do you want to play?
-          </h2>
-          <p className="text-base text-on-surface-variant">
-            Select a session type to begin your journey.
-          </p>
-        </div>
+      <main className="flex-1 flex flex-col px-5 pb-24 w-full max-w-lg mx-auto overflow-y-auto">
+        {/* Mode Selection */}
+        <section className="pt-4 pb-6">
+          <h2 className="text-xl font-bold text-on-surface mb-1">How do you want to play?</h2>
+          <p className="text-sm text-on-surface-variant mb-4">Pick a mode that fits your vibe.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setSessionType('online')}
+              className={`relative flex flex-col items-center p-5 rounded-2xl border-2 transition-all duration-200 active:scale-[0.97] ${
+                sessionType === 'online'
+                  ? 'border-primary bg-primary/5 shadow-soft'
+                  : 'border-surface-variant bg-surface hover:border-outline'
+              }`}
+            >
+              {sessionType === 'online' && (
+                <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                  <Check className="w-3 h-3 text-on-primary" strokeWidth={3} />
+                </div>
+              )}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                sessionType === 'online' ? 'bg-primary text-on-primary' : 'bg-secondary-container/20 text-secondary'
+              }`}>
+                <Clock className="w-6 h-6" />
+              </div>
+              <span className="text-sm font-semibold text-on-surface">Online</span>
+              <span className="text-xs text-on-surface-variant mt-1">Anytime</span>
+            </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-8">
-          <label className="relative cursor-pointer group w-full h-full block">
-            <input
-              type="radio"
-              name="session_type"
-              value="online"
-              checked={sessionType === 'online'}
-              onChange={() => setSessionType('online')}
-              className="sr-only peer"
-            />
-            <div className="bg-surface rounded-xl p-6 h-full flex flex-col items-start shadow-soft border border-[#EEEEEE] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] group-active:scale-[0.98] peer-checked:border-primary peer-checked:border-2 peer-checked:bg-primary/5">
-              <div className="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center mb-4 transition-colors duration-300 peer-checked:bg-primary peer-checked:text-white">
-                <span className="material-symbols-outlined text-[28px]">schedule</span>
+            <button
+              onClick={() => setSessionType('realtime')}
+              className={`relative flex flex-col items-center p-5 rounded-2xl border-2 transition-all duration-200 active:scale-[0.97] ${
+                sessionType === 'realtime'
+                  ? 'border-primary bg-primary/5 shadow-soft'
+                  : 'border-surface-variant bg-surface hover:border-outline'
+              }`}
+            >
+              {sessionType === 'realtime' && (
+                <div className="absolute top-2 right-2 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
+                  <Check className="w-3 h-3 text-on-primary" strokeWidth={3} />
+                </div>
+              )}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-colors ${
+                sessionType === 'realtime' ? 'bg-primary text-on-primary' : 'bg-secondary-container/20 text-secondary'
+              }`}>
+                <Zap className="w-6 h-6" />
               </div>
-              <div className="mt-auto">
-                <h3 className="text-xl font-semibold text-on-surface mb-1">Online</h3>
-                <p className="text-sm text-on-surface-variant">Answer anytime, no rush</p>
-              </div>
-            </div>
-          </label>
+              <span className="text-sm font-semibold text-on-surface">Realtime</span>
+              <span className="text-xs text-on-surface-variant mt-1">Together</span>
+            </button>
+          </div>
+        </section>
 
-          <label className="relative cursor-pointer group w-full h-full block">
-            <input
-              type="radio"
-              name="session_type"
-              value="realtime"
-              checked={sessionType === 'realtime'}
-              onChange={() => setSessionType('realtime')}
-              className="sr-only peer"
-            />
-            <div className="bg-surface rounded-xl p-6 h-full flex flex-col items-start shadow-soft border border-[#EEEEEE] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] group-active:scale-[0.98] peer-checked:border-primary peer-checked:border-2 peer-checked:bg-primary/5">
-              <div className="w-12 h-12 rounded-full bg-secondary-container/20 text-secondary flex items-center justify-center mb-4 transition-colors duration-300 peer-checked:bg-primary peer-checked:text-white">
-                <span className="material-symbols-outlined text-[28px]">bolt</span>
-              </div>
-              <div className="mt-auto">
-                <h3 className="text-xl font-semibold text-on-surface mb-1">Realtime</h3>
-                <p className="text-sm text-on-surface-variant">Answer together, now</p>
-              </div>
-            </div>
-          </label>
-        </div>
-
-        <div className="w-full mb-8">
-          <p className="text-sm font-medium text-on-surface-variant mb-4 uppercase tracking-wider text-center">
-            Select Sections
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {/* Category Selection */}
+        <section className="pb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-on-surface uppercase tracking-wide">Sections</h3>
+            <span className="text-xs text-primary font-medium">{selectedCategories.length} selected</span>
+          </div>
+          <div className="flex flex-col gap-2">
             {ALL_CATEGORIES.map((cat) => {
               const isSelected = selectedCategories.includes(cat)
+              const Icon = CATEGORY_LUCIDE[cat]
               return (
                 <button
                   key={cat}
                   onClick={() => toggleCategory(cat)}
-                  className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 text-left ${
+                  className={`flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 active:scale-[0.98] text-left ${
                     isSelected
-                      ? 'bg-primary/5 border-primary border-2 shadow-soft'
-                      : 'bg-surface border-outline-variant hover:border-outline hover:shadow-soft'
+                      ? 'border-primary bg-primary/5 shadow-soft'
+                      : 'border-surface-variant bg-surface hover:border-outline'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                    isSelected ? 'bg-primary text-on-primary' : 'bg-secondary-container/20 text-secondary'
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                    isSelected ? 'bg-primary text-on-primary' : 'bg-surface-container-high text-on-surface-variant'
                   }`}>
-                    <span className="material-symbols-outlined text-[20px]">
-                      {CATEGORY_ICONS[cat]}
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-semibold text-on-surface block">
+                      {CATEGORY_LABELS[cat][language]}
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-on-surface">
-                    {CATEGORY_LABELS[cat][language]}
-                  </span>
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                    isSelected ? 'border-primary bg-primary' : 'border-outline-variant'
+                  }`}>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-on-primary" strokeWidth={3} />}
+                  </div>
                 </button>
               )
             })}
           </div>
           {selectedCategories.length === 0 && (
-            <p className="text-xs text-error mt-2 text-center">Select at least one section</p>
+            <p className="text-xs text-error mt-2 text-center font-medium">Select at least one section</p>
           )}
-        </div>
+        </section>
 
-        <div className="w-full mb-8 flex flex-col items-center">
-          <p className="text-sm font-medium text-on-surface-variant mb-4 uppercase tracking-wider">
-            Select Language
-          </p>
-          <div className="flex space-x-4">
+        {/* Language Selection */}
+        <section className="pb-6">
+          <h3 className="text-sm font-semibold text-on-surface uppercase tracking-wide mb-3">Language</h3>
+          <div className="flex gap-2">
             {(['en', 'fr', 'ar'] as AppLanguage[]).map((lang) => (
-              <label key={lang} className="cursor-pointer group relative">
-                <input
-                  type="radio"
-                  name="language"
-                  value={lang}
-                  checked={language === lang}
-                  onChange={() => setLanguage(lang)}
-                  className="sr-only peer"
-                />
-                <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-transparent peer-checked:border-primary peer-checked:shadow-[0_0_0_4px_rgba(174,47,52,0.1)] transition-all duration-300 shadow-soft">
-                  <img src={FLAGS[lang]} alt={`${lang} flag`} className="w-full h-full object-cover" />
-                </div>
-              </label>
+              <button
+                key={lang}
+                onClick={() => setLanguage(lang)}
+                className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 transition-all duration-200 active:scale-[0.97] ${
+                  language === lang
+                    ? 'border-primary bg-primary/5 shadow-soft'
+                    : 'border-surface-variant bg-surface hover:border-outline'
+                }`}
+              >
+                <span className="text-xl">{FLAGS[lang].emoji}</span>
+                <span className="text-sm font-medium text-on-surface">{FLAGS[lang].label}</span>
+              </button>
             ))}
           </div>
-        </div>
+        </section>
 
-        <div className="w-full mt-auto pt-4">
+        {/* Create Button */}
+        <div className="mt-auto pt-2 pb-4">
           <button
             onClick={handleCreate}
             disabled={selectedCategories.length === 0 || creating}
-            className="w-full min-h-[56px] bg-primary text-on-primary text-sm font-medium rounded-full shadow-soft hover:shadow-[0_6px_24px_rgba(174,47,52,0.3)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] transition-all duration-300 flex items-center justify-center focus:outline-none focus:ring-4 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-14 bg-primary text-on-primary rounded-2xl text-sm font-semibold flex items-center justify-center gap-2 shadow-soft hover:shadow-[0_8px_30px_rgba(174,47,52,0.25)] active:scale-[0.98] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {creating ? (
-              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
                 Create Session
-                <span className="material-symbols-outlined ml-2 text-[20px]">arrow_forward</span>
+                <ArrowRight className="w-4 h-4" />
               </>
             )}
           </button>

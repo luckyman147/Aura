@@ -2,83 +2,81 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useSession } from '@/hooks/useSupabase'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
+import { Copy, X, Loader2, QrCode } from 'lucide-react'
+import { useState } from 'react'
 
 export function WaitSession() {
   const { code } = useParams<{ code: string }>()
   const { session, loading } = useSession(code ?? null)
   const navigate = useNavigate()
+  const [copied, setCopied] = useState(false)
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+      <div className="min-h-dvh bg-background flex flex-col items-center justify-center">
         <Header />
-        <span className="material-symbols-outlined animate-spin text-primary text-[48px]">progress_activity</span>
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
       </div>
     )
   }
 
   if (session?.status === 'active') {
     localStorage.setItem('aura_session_code', session.code)
+    localStorage.setItem('aura_session_id', session.id)
     navigate('/session/quiz')
     return null
   }
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code ?? '')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-dvh bg-background flex flex-col">
       <Header />
 
-      <main className="flex-grow flex flex-col items-center justify-center px-5 py-6 max-w-md mx-auto w-full pb-24">
+      <main className="flex-1 flex flex-col items-center px-5 py-6 max-w-md mx-auto w-full pb-24">
         <div className="text-center mb-8">
-          <h1 className="text-[28px] leading-[36px] font-semibold text-on-background mb-2">
-            Waiting for Partner
-          </h1>
-          <p className="text-base text-on-surface-variant">
-            Share this code with your partner to start.
+          <div className="w-16 h-16 bg-secondary-container/20 rounded-2xl flex items-center justify-center mx-auto mb-4 pulse-qr">
+            <QrCode className="w-8 h-8 text-secondary" />
+          </div>
+          <h1 className="text-2xl font-bold text-on-background mb-2">Waiting for Partner</h1>
+          <p className="text-sm text-on-surface-variant">
+            Share this code and wait for your partner to join.
           </p>
         </div>
 
-        <div className="relative mb-8 w-full max-w-[280px]">
-          <div className="absolute inset-0 bg-secondary-container/20 rounded-xl pulse-qr blur-md" />
-          <div className="bg-surface-container-lowest p-6 rounded-xl shadow-soft relative z-10 border border-surface-variant flex flex-col items-center">
-            <div className="w-48 h-48 bg-surface-variant rounded-md mb-4 relative overflow-hidden flex items-center justify-center">
-              <span className="material-symbols-outlined text-[80px] text-on-surface-variant/30">qr_code_2</span>
+        <div className="relative mb-8 w-full max-w-[260px]">
+          <div className="absolute inset-0 bg-secondary-container/20 rounded-3xl pulse-qr blur-lg" />
+          <div className="bg-surface p-6 rounded-3xl shadow-soft relative z-10 border border-surface-variant flex flex-col items-center">
+            <div className="text-[10px] text-on-surface-variant mb-3 uppercase tracking-[0.2em] font-medium">
+              Session Code
             </div>
-            <div className="text-center w-full border-t border-surface-variant pt-4">
-              <div className="text-xs text-on-surface-variant mb-2 uppercase tracking-wider">
-                Session Code
-              </div>
-              <div className="text-[40px] leading-[48px] tracking-[0.1em] font-bold text-primary">
-                {code}
-              </div>
+            <div className="text-4xl tracking-[0.2em] font-bold text-primary mb-4">
+              {code}
             </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center space-y-4 mb-8">
-          <div className="flex items-center space-x-3 bg-secondary-fixed/50 px-4 py-2 rounded-full">
-            <span className="text-sm font-medium text-on-secondary-fixed-variant">
-              Waiting for partner
-            </span>
-            <div className="w-6 flex justify-center text-on-secondary-fixed-variant ml-1">
+            <div className="flex items-center gap-2 bg-secondary-fixed/50 px-3 py-1.5 rounded-full">
+              <span className="text-xs text-on-secondary-fixed-variant font-medium">Waiting</span>
               <div className="dot-flashing" />
             </div>
           </div>
         </div>
 
-        <div className="w-full space-y-3 mt-auto">
+        <div className="w-full max-w-xs mx-auto space-y-3 mt-auto">
           <button
-            onClick={() => {
-              navigator.clipboard.writeText(code ?? '')
-            }}
-            className="w-full bg-secondary-container/10 text-secondary text-sm font-medium py-4 rounded-full flex items-center justify-center space-x-2 border border-secondary-container hover:bg-secondary-container/20 transition-colors"
+            onClick={handleCopy}
+            className="w-full h-12 bg-primary/10 text-primary text-sm font-semibold rounded-2xl flex items-center justify-center gap-2 border border-primary/20 hover:bg-primary/15 active:scale-[0.98] transition-all"
           >
-            <span className="material-symbols-outlined">content_copy</span>
-            <span>Copy Code</span>
+            <Copy className="w-4 h-4" />
+            {copied ? 'Copied!' : 'Copy Code'}
           </button>
           <button
             onClick={() => navigate('/')}
-            className="w-full bg-surface text-on-surface-variant text-sm font-medium py-4 rounded-full border border-outline-variant hover:bg-surface-variant/50 transition-colors"
+            className="w-full h-12 bg-surface text-on-surface-variant text-sm font-medium rounded-2xl flex items-center justify-center gap-2 border border-surface-variant hover:bg-surface-variant/50 active:scale-[0.98] transition-all"
           >
+            <X className="w-4 h-4" />
             Cancel
           </button>
         </div>

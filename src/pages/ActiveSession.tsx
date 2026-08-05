@@ -1,34 +1,41 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { useQuestions, useAnswers } from '@/hooks/useSupabase'
-import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
+import { getQuestionText, CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
+import { Loader2, SkipForward, X, Minus, Check, Clock } from 'lucide-react'
+import { MessageCircle, Heart, Leaf, Handshake, PiggyBank, Baby, Diamond } from 'lucide-react'
 
 function getOrCreatePlayerId(): string {
   return localStorage.getItem('aura_player_id') ?? ''
-}
-
-function getSessionCode(): string {
-  return localStorage.getItem('aura_session_code') ?? ''
 }
 
 function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
 }
 
+const CATEGORY_LUCIDE: Record<Category, typeof Heart> = {
+  communication: MessageCircle,
+  values: Heart,
+  lifestyle: Leaf,
+  intimacy: Handshake,
+  finances: PiggyBank,
+  children: Baby,
+  marriage: Diamond,
+}
+
 export function ActiveSession() {
   const navigate = useNavigate()
   const [currentIdx, setCurrentIdx] = useState(0)
-  const [localAnswers, setLocalAnswers] = useState<Record<string, AnswerValue>>({})
+  const [answered, setAnswered] = useState(false)
 
-  const sessionCode = getSessionCode()
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
   const categories: Category[] = ['communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage']
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
-  const { answers: dbAnswers, submitAnswer } = useAnswers(
+  const { submitAnswer } = useAnswers(
     localStorage.getItem('aura_session_id') ?? null,
     playerId,
   )
@@ -38,41 +45,37 @@ export function ActiveSession() {
   const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
 
   const handleAnswer = useCallback(async (answer: AnswerValue) => {
-    if (!question) return
-
-    setLocalAnswers((prev) => ({ ...prev, [question.id]: answer }))
+    if (!question || answered) return
+    setAnswered(true)
 
     await submitAnswer(question.id, answer)
 
     setTimeout(() => {
       if (currentIdx < totalQuestions - 1) {
         setCurrentIdx((prev) => prev + 1)
+        setAnswered(false)
       } else {
         navigate('/session/results')
       }
-    }, 300)
-  }, [question, currentIdx, totalQuestions, submitAnswer, navigate])
-
-  const handleSkip = useCallback(() => {
-    handleAnswer('skipped')
-  }, [handleAnswer])
+    }, 400)
+  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered])
 
   if (questionsLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="min-h-dvh flex flex-col items-center justify-center">
         <Header />
-        <span className="material-symbols-outlined animate-spin text-primary text-[48px]">progress_activity</span>
-        <p className="text-on-surface-variant mt-4">Loading questions...</p>
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
+        <p className="text-on-surface-variant mt-4 text-sm">Loading questions...</p>
       </div>
     )
   }
 
   if (!question) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
+      <div className="min-h-dvh flex flex-col items-center justify-center px-6">
         <Header />
-        <p className="text-on-surface-variant">No questions available.</p>
-        <button onClick={() => navigate('/')} className="mt-4 text-primary underline">
+        <p className="text-on-surface-variant text-sm">No questions available.</p>
+        <button onClick={() => navigate('/')} className="mt-4 text-primary text-sm font-medium underline">
           Go Home
         </button>
       </div>
@@ -80,79 +83,89 @@ export function ActiveSession() {
   }
 
   const questionText = getQuestionText(question, language)
-  const currentCategory = question.category
+  const CatIcon = CATEGORY_LUCIDE[question.category]
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
+    <div className="min-h-dvh flex flex-col bg-background">
       <Header />
 
-      <main className="flex-1 w-full max-w-md mx-auto flex flex-col justify-between px-5 pt-4 pb-6 relative">
-        <div className="w-full flex flex-col gap-3 mt-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-on-surface-variant">
-              {currentIdx + 1}/{totalQuestions}
+      <main className="flex-1 w-full max-w-md mx-auto flex flex-col px-5 pt-3 pb-6">
+        {/* Progress */}
+        <div className="mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-semibold text-on-surface-variant">
+              {currentIdx + 1} / {totalQuestions}
             </span>
-            <span className="text-sm font-medium text-secondary uppercase tracking-widest bg-secondary-container/30 px-3 py-1 rounded-full">
-              {CATEGORY_LABELS[currentCategory][language]}
-            </span>
+            <div className="flex items-center gap-1.5 bg-secondary-container/30 px-2.5 py-1 rounded-full">
+              <CatIcon className="w-3.5 h-3.5 text-secondary" />
+              <span className="text-[11px] font-semibold text-secondary uppercase tracking-wider">
+                {CATEGORY_LABELS[question.category][language]}
+              </span>
+            </div>
           </div>
-          <div className="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden mt-1">
+          <div className="w-full h-1.5 bg-surface-variant rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-secondary to-primary rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-secondary to-primary rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center items-center py-8 my-8 text-center">
-          <h2 className="text-[28px] leading-[36px] font-semibold text-on-surface leading-tight mb-6">
+        {/* Question */}
+        <div className="flex-1 flex flex-col justify-center items-center py-6 my-4 text-center">
+          <div className="inline-flex items-center gap-1.5 mb-6 px-3 py-1.5 bg-surface-container-low rounded-full">
+            <Clock className="w-3.5 h-3.5 text-on-surface-variant" />
+            <span className="text-[11px] font-medium text-on-surface-variant">Your turn</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-on-surface leading-snug px-2">
             {questionText}
           </h2>
-          <div className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-surface-container-low rounded-full">
-            <span className="material-symbols-outlined text-tertiary" style={{ fontSize: '16px' }}>
-              schedule
-            </span>
-            <span className="text-xs text-on-surface-variant">Your turn</span>
-          </div>
         </div>
 
-        <div className="w-full flex justify-between items-center gap-3 mt-auto mb-2">
+        {/* Answer Buttons */}
+        <div className="grid grid-cols-3 gap-3 mb-3">
           <button
             onClick={() => handleAnswer('disagree')}
-            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-error-container/20 hover:border-error hover:shadow-soft transition-all duration-300 group"
+            disabled={answered}
+            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-error-container/15 hover:border-error/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
           >
-            <div className="w-12 h-12 rounded-full bg-error-container/30 flex items-center justify-center text-error group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined">close</span>
+            <div className="w-11 h-11 rounded-full bg-error-container/30 flex items-center justify-center">
+              <X className="w-5 h-5 text-error" strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-medium text-on-surface">Disagree</span>
+            <span className="text-xs font-semibold text-on-surface">Disagree</span>
           </button>
 
           <button
             onClick={() => handleAnswer('neutral')}
-            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-surface-variant/50 hover:border-outline hover:shadow-soft transition-all duration-300 group"
+            disabled={answered}
+            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-surface-variant/50 hover:border-outline active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
           >
-            <div className="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined">remove</span>
+            <div className="w-11 h-11 rounded-full bg-surface-container-high flex items-center justify-center">
+              <Minus className="w-5 h-5 text-on-surface-variant" strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-medium text-on-surface">Neutral</span>
+            <span className="text-xs font-semibold text-on-surface">Neutral</span>
           </button>
 
           <button
             onClick={() => handleAnswer('agree')}
-            className="flex-1 flex flex-col items-center justify-center gap-3 p-5 rounded-2xl border border-outline-variant bg-surface hover:bg-secondary-container/20 hover:border-secondary hover:shadow-soft transition-all duration-300 group"
+            disabled={answered}
+            className="flex flex-col items-center gap-2.5 py-5 px-3 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-secondary-container/15 hover:border-secondary/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50"
           >
-            <div className="w-12 h-12 rounded-full bg-secondary-container/40 flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
-              <span className="material-symbols-outlined">check</span>
+            <div className="w-11 h-11 rounded-full bg-secondary-container/40 flex items-center justify-center">
+              <Check className="w-5 h-5 text-secondary" strokeWidth={2.5} />
             </div>
-            <span className="text-sm font-medium text-on-surface">Agree</span>
+            <span className="text-xs font-semibold text-on-surface">Agree</span>
           </button>
         </div>
 
+        {/* Skip */}
         <button
-          onClick={handleSkip}
-          className="w-full mt-3 py-3 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors rounded-xl hover:bg-surface-variant/30"
+          onClick={() => handleAnswer('skipped')}
+          disabled={answered}
+          className="w-full py-3.5 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all disabled:opacity-50"
         >
-          Skip Question →
+          <SkipForward className="w-4 h-4" />
+          Skip Question
         </button>
       </main>
     </div>
