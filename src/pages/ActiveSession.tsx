@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { useQuestions, useAnswers, useSession, useMessages, updateSessionQuestionIndex, updatePartnerActive } from '@/hooks/useSupabase'
+import { useQuestions, useAnswers, useSessionById, useMessages, updateSessionQuestionIndex, updatePartnerActive } from '@/hooks/useSupabase'
 import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
 import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, ChevronRight, Send, MessageCircle, AlertTriangle } from 'lucide-react'
@@ -18,10 +18,6 @@ function getOrCreatePlayerId(): string {
 
 function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
-}
-
-function getSessionCode(): string {
-  return localStorage.getItem('aura_session_code') ?? ''
 }
 
 function getSessionId(): string {
@@ -48,7 +44,6 @@ export function ActiveSession() {
 
   const playerId = getOrCreatePlayerId()
   const language = getLanguage()
-  const sessionCode = getSessionCode()
   const sessionId = getSessionId()
 
   const categories: Category[] = (() => {
@@ -60,7 +55,7 @@ export function ActiveSession() {
   })()
 
   const { questions, loading: questionsLoading } = useQuestions(categories, language)
-  const { session } = useSession(sessionCode || null)
+  const { session } = useSessionById(sessionId || null)
   const { submitAnswer } = useAnswers(sessionId || null, playerId)
   const { messages, sendMessage } = useMessages(sessionId || null)
 
@@ -69,34 +64,29 @@ export function ActiveSession() {
   const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
   const question = questions[currentIdx]
   const isOnline = session?.mode === 'online'
-  const amHost = localStorage.getItem('aura_player_role') === 'host'
-  const myField = amHost ? 'host_id' : 'partner_id'
-  const isMySession = session && session[myField] === playerId
 
   // Detect partner leaving
   useEffect(() => {
-    if (!session || !isMySession) return
+    if (!session) return
     if (session.partner_active === false && session.status === 'active') {
       setPartnerLeft(true)
     }
   }, [session?.partner_active, session?.status])
 
-  // Mark myself as active on mount, inactive on leave
+  // Mark myself active on mount; flag partner_active=false in this browser only matters on actual unload
   useEffect(() => {
-    if (!sessionId || !isMySession) return
+    if (!sessionId) return
     updatePartnerActive(sessionId, true)
 
     const handleBeforeUnload = () => {
-      navigator.sendBeacon('/session/leave', new Blob([]))
       updatePartnerActive(sessionId, false)
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
-      updatePartnerActive(sessionId, false)
     }
-  }, [sessionId, isMySession])
+  }, [sessionId])
 
   // Sync chat
   useEffect(() => {
@@ -104,12 +94,12 @@ export function ActiveSession() {
   }, [messages])
 
   const syncIndex = useCallback(async (newIndex: number) => {
-    if (!sessionId || !isMySession) return
+    if (!sessionId) return
     await updateSessionQuestionIndex(sessionId, newIndex)
-  }, [sessionId, isMySession])
+  }, [sessionId])
 
   const handleAnswer = useCallback(async (answer: AnswerValue) => {
-    if (!question || answered || !isMySession) return
+    if (!question || answered) return
     setAnswered(true)
 
     await submitAnswer(question.id, answer)
@@ -122,17 +112,17 @@ export function ActiveSession() {
         navigate('/session/results')
       }
     }, 400)
-  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered, isMySession, syncIndex])
+  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered, syncIndex])
 
   const handlePrev = async () => {
-    if (currentIdx > 0 && isMySession) {
+    if (currentIdx > 0) {
       setAnswered(false)
       await syncIndex(currentIdx - 1)
     }
   }
 
   const handleNext = async () => {
-    if (currentIdx < totalQuestions - 1 && isMySession) {
+    if (currentIdx < totalQuestions - 1) {
       setAnswered(false)
       await syncIndex(currentIdx + 1)
     }
@@ -152,7 +142,7 @@ export function ActiveSession() {
   }
 
   const handleLeaveSession = async () => {
-    if (sessionId && isMySession) {
+    if (sessionId) {
       await updatePartnerActive(sessionId, false)
     }
     localStorage.removeItem('aura_session_code')

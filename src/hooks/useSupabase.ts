@@ -11,6 +11,73 @@ import type {
   AppLanguage,
 } from '@/types/database'
 
+export function useSessionById(sessionId: string | null) {
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!sessionId) { setLoading(false); return }
+
+    supabase
+      .from('sessions')
+      .select('*')
+      .eq('id', sessionId)
+      .single()
+      .then(({ data }) => {
+        setSession(data)
+        setLoading(false)
+      })
+  }, [sessionId])
+
+  // Realtime subscription with unique channel name
+  useEffect(() => {
+    if (!sessionId) return
+    const channelName = `session:${sessionId}:${Math.random().toString(36).slice(2)}`
+    const channel = supabase
+      .channel(channelName)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'sessions',
+        filter: `id=eq.${sessionId}`,
+      }, (payload) => {
+        setSession(payload.new as Session)
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [sessionId])
+
+  // Always poll — covers Realtime not being enabled + SECURITY DEFINER
+  useEffect(() => {
+    if (!sessionId) return
+    let stopped = false
+    const interval = setInterval(async () => {
+      if (stopped) return
+      const { data } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .single()
+      if (!data || stopped) return
+      setSession((prev) => {
+        if (!prev) return data
+        if (
+          prev.current_question_index !== data.current_question_index ||
+          prev.partner_active !== data.partner_active ||
+          prev.status !== data.status ||
+          prev.partner_id !== data.partner_id
+        ) {
+          return data
+        }
+        return prev
+      })
+    }, 1000)
+    return () => { stopped = true; clearInterval(interval) }
+  }, [sessionId])
+
+  return { session, loading }
+}
+
 export function useSession(code: string | null) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
