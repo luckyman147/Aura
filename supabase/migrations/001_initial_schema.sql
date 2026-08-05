@@ -3,6 +3,12 @@
 
 create extension if not exists "uuid-ossp";
 
+-- Drop types if they exist (safe re-run)
+drop type if exists category cascade;
+drop type if exists session_mode cascade;
+drop type if exists session_status cascade;
+drop type if exists app_language cascade;
+
 create type category as enum (
   'communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage'
 );
