@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { useQuestions, useAnswers, useSessionById, useMessages, updateSessionQuestionIndex, updatePartnerActive, updateSessionTurn, updateSessionStatus } from '@/hooks/useSupabase'
+import { useQuestions, useAnswers, useSessionById, useMessages, updateSessionQuestionIndex, updateSessionTurn, updateSessionStatus } from '@/hooks/useSupabase'
+import { supabase } from '@/lib/supabase/client'
 import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
 import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, ChevronRight, Send, MessageCircle, AlertTriangle } from 'lucide-react'
@@ -71,28 +72,35 @@ export function ActiveSession() {
   const playerRole = getPlayerRole()
   const isMyTurn = session?.current_turn === playerRole
 
-  // Detect partner leaving
-  useEffect(() => {
-    if (!session) return
-    if (session.partner_active === false && session.status === 'active') {
-      setPartnerLeft(true)
-    }
-  }, [session?.partner_active, session?.status])
-
-  // Mark myself active on mount; flag partner_active=false in this browser only matters on actual unload
+  // Detect partner leaving via Realtime Presence (auto-detects disconnects)
   useEffect(() => {
     if (!sessionId) return
-    updatePartnerActive(sessionId, true)
+    const channel = supabase.channel(`session:${sessionId}`)
+    let partnerPresent = false
 
-    const handleBeforeUnload = () => {
-      updatePartnerActive(sessionId, false)
-    }
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState()
+        const players = Object.keys(state)
+        const online = players.length
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+        if (partnerPresent && online < 2) {
+          setPartnerLeft(true)
+        }
+      })
+      .on('presence', { event: 'join' }, () => {
+        partnerPresent = true
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({ player_id: playerId, joined_at: Date.now() })
+        }
+      })
+
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
+      supabase.removeChannel(channel)
     }
-  }, [sessionId])
+  }, [sessionId, playerId])
 
   // Sync chat
   useEffect(() => {
@@ -160,7 +168,8 @@ export function ActiveSession() {
 
   const handleLeaveSession = async () => {
     if (sessionId) {
-      await updatePartnerActive(sessionId, false)
+      const channel = supabase.channel(`session:${sessionId}`)
+      await channel.untrack()
     }
     localStorage.removeItem('aura_session_code')
     localStorage.removeItem('aura_session_id')
