@@ -167,6 +167,42 @@ export function useQuestions(categories: Category[], language: AppLanguage) {
   return { questions, loading }
 }
 
+export function useQuestionCounts() {
+  const [counts, setCounts] = useState<Record<Category, number>>({
+    communication: 0, values: 0, lifestyle: 0,
+    intimacy: 0, finances: 0, children: 0, marriage: 0,
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const categories: Category[] = [
+      'communication', 'values', 'lifestyle', 'intimacy', 'finances', 'children', 'marriage',
+    ]
+
+    Promise.all(
+      categories.map(async (cat) => {
+        const { count } = await supabase
+          .from('questions')
+          .select('*', { count: 'exact', head: true })
+          .eq('category', cat)
+        return [cat, count ?? 0] as const
+      })
+    ).then((results) => {
+      const map: Record<Category, number> = {
+        communication: 0, values: 0, lifestyle: 0,
+        intimacy: 0, finances: 0, children: 0, marriage: 0,
+      }
+      for (const [cat, count] of results) {
+        map[cat] = count
+      }
+      setCounts(map)
+      setLoading(false)
+    })
+  }, [])
+
+  return { counts, loading }
+}
+
 export function useAnswers(sessionId: string | null, playerId: string | null) {
   const [answers, setAnswers] = useState<Answer[]>([])
   const [loading, setLoading] = useState(true)
@@ -236,6 +272,26 @@ export function useResults(sessionId: string | null) {
   }, [sessionId])
 
   return { result, loading }
+}
+
+export function useSessionAnswers(sessionId: string | null) {
+  const [answers, setAnswers] = useState<Answer[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!sessionId) { setLoading(false); return }
+
+    supabase
+      .from('answers')
+      .select('*')
+      .eq('session_id', sessionId)
+      .then(({ data }) => {
+        setAnswers(data ?? [])
+        setLoading(false)
+      })
+  }, [sessionId])
+
+  return { answers, loading }
 }
 
 export async function createSession(
@@ -344,6 +400,20 @@ export async function updatePartnerActive(sessionId: string, active: boolean) {
   return supabase
     .from('sessions')
     .update({ partner_active: active })
+    .eq('id', sessionId)
+}
+
+export async function updateSessionTurn(sessionId: string, turn: 'host' | 'partner') {
+  return supabase
+    .from('sessions')
+    .update({ current_turn: turn })
+    .eq('id', sessionId)
+}
+
+export async function updateSessionStatus(sessionId: string, status: 'active' | 'completed') {
+  return supabase
+    .from('sessions')
+    .update({ status })
     .eq('id', sessionId)
 }
 

@@ -1,15 +1,35 @@
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { useResults, computeResults } from '@/hooks/useSupabase'
-import { useEffect, useState } from 'react'
-import { Share2, RotateCcw, Star, Brain, Trophy, TrendingUp, Loader2 } from 'lucide-react'
+import { useResults, useSessionAnswers, useSessionById, useQuestions, computeResults } from '@/hooks/useSupabase'
+import { CATEGORY_LABELS } from '@/types/database'
+import type { Category, AppLanguage } from '@/types/database'
+import { useEffect, useState, useMemo } from 'react'
+import { Share2, RotateCcw, Star, Brain, TrendingUp, Loader2, Check, X, Minus } from 'lucide-react'
+
+function getLanguage(): AppLanguage {
+  return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
+}
 
 export function Results() {
   const navigate = useNavigate()
   const sessionId = localStorage.getItem('aura_session_id') ?? ''
-  const { result, loading } = useResults(sessionId || null)
+  const { result, loading: resultLoading } = useResults(sessionId || null)
+  const { session } = useSessionById(sessionId || null)
+  const { answers, loading: answersLoading } = useSessionAnswers(sessionId || null)
   const [computing, setComputing] = useState(false)
+
+  const language = getLanguage()
+
+  const selectedCategories: Category[] = useMemo(() => {
+    const stored = localStorage.getItem('aura_session_categories')
+    if (stored) {
+      try { return JSON.parse(stored) } catch { /* ignore */ }
+    }
+    return ['communication', 'values', 'lifestyle']
+  }, [])
+
+  const { questions, loading: questionsLoading } = useQuestions(selectedCategories, language)
 
   useEffect(() => {
     if (!sessionId) return
@@ -20,19 +40,44 @@ export function Results() {
     })()
   }, [sessionId])
 
-  const score = result?.overall_score ?? 73
-  const categories = [
-    { name: 'Communication', score: result?.communication_score ?? 60, color: 'bg-secondary' },
-    { name: 'Values', score: result?.values_score ?? 85, color: 'bg-primary' },
-    { name: 'Lifestyle', score: result?.lifestyle_score ?? 75, color: 'bg-primary-container' },
-  ]
+  const stats = useMemo(() => {
+    if (answers.length === 0) return null
 
-  const alignment = result?.biggest_alignment
-    ?? 'You both deeply value Family & Connection, forming a strong foundation.'
-  const gap = result?.biggest_gap
-    ?? 'Your approaches to Conflict Resolution differ; proactive communication will be key.'
+    let agreeCount = 0
+    let disagreeCount = 0
+    let neutralCount = 0
 
-  if (loading || computing) {
+    for (const a of answers) {
+      if (a.answer === 'agree') agreeCount++
+      else if (a.answer === 'disagree') disagreeCount++
+      else if (a.answer === 'neutral') neutralCount++
+    }
+
+    return { agreeCount, disagreeCount, neutralCount, total: answers.length }
+  }, [answers])
+
+  const categoryBreakdown = useMemo(() => {
+    if (answers.length === 0 || questions.length === 0) return []
+
+    const questionMap = new Map(questions.map((q) => [q.id, q]))
+
+    return selectedCategories.map((cat) => {
+      const catAnswers = answers.filter((a) => {
+        const q = questionMap.get(a.question_id)
+        return q?.category === cat && a.answer !== 'skipped'
+      })
+
+      const agree = catAnswers.filter((a) => a.answer === 'agree').length
+      const disagree = catAnswers.filter((a) => a.answer === 'disagree').length
+      const total = catAnswers.length
+
+      return { category: cat, agree, disagree, total }
+    })
+  }, [answers, questions, selectedCategories])
+
+  const loading = resultLoading || answersLoading || questionsLoading || computing
+
+  if (loading) {
     return (
       <div className="min-h-dvh bg-background flex flex-col items-center justify-center">
         <Header />
@@ -41,6 +86,13 @@ export function Results() {
       </div>
     )
   }
+
+  const score = result?.overall_score ?? 73
+
+  const alignment = result?.biggest_alignment
+    ?? 'You both deeply value shared connection, forming a strong foundation for your relationship.'
+  const gap = result?.biggest_gap
+    ?? 'Consider exploring areas where your perspectives differ to deepen understanding.'
 
   return (
     <div className="min-h-dvh bg-background flex flex-col">
@@ -66,27 +118,74 @@ export function Results() {
             </p>
           </section>
 
-          {/* Category Breakdown */}
+          {/* Agreement Summary */}
+          {stats && (
+            <section className="bg-surface shadow-soft rounded-2xl p-4 border border-surface-variant">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-bold text-on-surface uppercase tracking-wide">Agreement Summary</h2>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col items-center p-3 bg-secondary-container/15 rounded-xl">
+                  <div className="w-8 h-8 rounded-full bg-secondary/15 flex items-center justify-center mb-2">
+                    <Check className="w-4 h-4 text-secondary" />
+                  </div>
+                  <span className="text-lg font-bold text-on-surface">{stats.agreeCount}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase tracking-wide">Agreed</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-error-container/15 rounded-xl">
+                  <div className="w-8 h-8 rounded-full bg-error/15 flex items-center justify-center mb-2">
+                    <X className="w-4 h-4 text-error" />
+                  </div>
+                  <span className="text-lg font-bold text-on-surface">{stats.disagreeCount}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase tracking-wide">Disagreed</span>
+                </div>
+                <div className="flex flex-col items-center p-3 bg-surface-container-high rounded-xl">
+                  <div className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center mb-2">
+                    <Minus className="w-4 h-4 text-on-surface-variant" />
+                  </div>
+                  <span className="text-lg font-bold text-on-surface">{stats.neutralCount}</span>
+                  <span className="text-[10px] text-on-surface-variant uppercase tracking-wide">Neutral</span>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Category Breakdown - only selected categories */}
           <section className="bg-surface shadow-soft rounded-2xl p-4 border border-surface-variant">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-4 h-4 text-primary" />
               <h2 className="text-sm font-bold text-on-surface uppercase tracking-wide">Breakdown</h2>
             </div>
             <div className="flex flex-col gap-4">
-              {categories.map((cat) => (
-                <div key={cat.name}>
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-sm font-medium text-on-surface">{cat.name}</span>
-                    <span className="text-xs font-semibold text-on-surface-variant">{cat.score}%</span>
+              {categoryBreakdown.map((cat) => {
+                const agreePct = cat.total > 0 ? Math.round((cat.agree / cat.total) * 100) : 0
+                const disagreePct = cat.total > 0 ? Math.round((cat.disagree / cat.total) * 100) : 0
+                return (
+                  <div key={cat.category}>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-sm font-medium text-on-surface">
+                        {CATEGORY_LABELS[cat.category][language]}
+                      </span>
+                      <span className="text-xs text-on-surface-variant">{cat.total} answered</span>
+                    </div>
+                    <div className="w-full bg-surface-container-high rounded-full h-2 flex overflow-hidden">
+                      <div
+                        className="bg-secondary h-full transition-all duration-1000 ease-out"
+                        style={{ width: `${agreePct}%` }}
+                      />
+                      <div
+                        className="bg-error h-full transition-all duration-1000 ease-out"
+                        style={{ width: `${disagreePct}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[10px] text-secondary font-medium">{cat.agree} agreed</span>
+                      <span className="text-[10px] text-error font-medium">{cat.disagree} disagreed</span>
+                    </div>
                   </div>
-                  <div className="w-full bg-surface-container-high rounded-full h-2">
-                    <div
-                      className={`${cat.color} h-2 rounded-full transition-all duration-1000 ease-out`}
-                      style={{ width: `${cat.score}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </section>
 
@@ -101,7 +200,6 @@ export function Results() {
               </div>
               <p className="text-sm text-on-surface leading-relaxed">{alignment}</p>
             </div>
-
             <div className="bg-surface rounded-2xl p-4 border border-surface-variant shadow-soft">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -129,7 +227,6 @@ export function Results() {
           </section>
         </div>
       </main>
-
       <BottomNav active="home" />
     </div>
   )

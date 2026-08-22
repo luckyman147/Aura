@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
 import { BottomNav } from '@/components/ui/BottomNav'
-import { createSession } from '@/hooks/useSupabase'
+import { createSession, useQuestionCounts } from '@/hooks/useSupabase'
 import { CATEGORY_LABELS, CATEGORY_ICONS } from '@/types/database'
 import type { Category, AppLanguage } from '@/types/database'
 import {
@@ -49,6 +49,7 @@ export function NewSession() {
     'communication', 'values', 'lifestyle',
   ])
   const [creating, setCreating] = useState(false)
+  const { counts } = useQuestionCounts()
 
   const toggleCategory = (cat: Category) => {
     setSelectedCategories((prev) =>
@@ -132,7 +133,12 @@ export function NewSession() {
         <section className="pb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-on-surface uppercase tracking-wide">Sections</h3>
-            <span className="text-xs text-primary font-medium">{selectedCategories.length} selected</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-on-surface-variant">
+                {selectedCategories.reduce((sum, cat) => sum + counts[cat], 0)} questions
+              </span>
+              <span className="text-xs text-primary font-medium">{selectedCategories.length} selected</span>
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             {ALL_CATEGORIES.map((cat) => {
@@ -156,6 +162,9 @@ export function NewSession() {
                   <div className="flex-1 min-w-0">
                     <span className="text-sm font-semibold text-on-surface block">
                       {CATEGORY_LABELS[cat][language]}
+                    </span>
+                    <span className="text-xs text-on-surface-variant">
+                      {counts[cat]} {counts[cat] === 1 ? 'question' : 'questions'}
                     </span>
                   </div>
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${

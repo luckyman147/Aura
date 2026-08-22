@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Header } from '@/components/ui/Header'
-import { useQuestions, useAnswers, useSessionById, useMessages, updateSessionQuestionIndex, updatePartnerActive } from '@/hooks/useSupabase'
+import { useQuestions, useAnswers, useSessionById, useMessages, updateSessionQuestionIndex, updatePartnerActive, updateSessionTurn, updateSessionStatus } from '@/hooks/useSupabase'
 import { getQuestionText, CATEGORY_LABELS } from '@/types/database'
 import type { AnswerValue, AppLanguage, Category } from '@/types/database'
 import { Loader2, SkipForward, X, Minus, Check, Clock, ChevronLeft, ChevronRight, Send, MessageCircle, AlertTriangle } from 'lucide-react'
@@ -18,6 +18,10 @@ function getOrCreatePlayerId(): string {
 
 function getLanguage(): AppLanguage {
   return (localStorage.getItem('aura_language') as AppLanguage) ?? 'en'
+}
+
+function getPlayerRole(): 'host' | 'partner' {
+  return (localStorage.getItem('aura_player_role') as 'host' | 'partner') ?? 'host'
 }
 
 function getSessionId(): string {
@@ -64,6 +68,8 @@ export function ActiveSession() {
   const progress = totalQuestions > 0 ? ((currentIdx + 1) / totalQuestions) * 100 : 0
   const question = questions[currentIdx]
   const isOnline = session?.mode === 'online'
+  const playerRole = getPlayerRole()
+  const isMyTurn = session?.current_turn === playerRole
 
   // Detect partner leaving
   useEffect(() => {
@@ -93,36 +99,47 @@ export function ActiveSession() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Auto-redirect to results when session completes (both players)
+  useEffect(() => {
+    if (session?.status === 'completed') {
+      navigate('/session/results')
+    }
+  }, [session?.status, navigate])
+
   const syncIndex = useCallback(async (newIndex: number) => {
     if (!sessionId) return
     await updateSessionQuestionIndex(sessionId, newIndex)
   }, [sessionId])
 
   const handleAnswer = useCallback(async (answer: AnswerValue) => {
-    if (!question || answered) return
+    if (!question || answered || !isMyTurn) return
     setAnswered(true)
 
     await submitAnswer(question.id, answer)
+
+    // Toggle turn after answering
+    const newTurn = session?.current_turn === 'host' ? 'partner' : 'host'
+    await updateSessionTurn(sessionId, newTurn)
 
     setTimeout(async () => {
       if (currentIdx < totalQuestions - 1) {
         await syncIndex(currentIdx + 1)
         setAnswered(false)
       } else {
-        navigate('/session/results')
+        await updateSessionStatus(sessionId, 'completed')
       }
     }, 400)
-  }, [question, currentIdx, totalQuestions, submitAnswer, navigate, answered, syncIndex])
+  }, [question, currentIdx, totalQuestions, submitAnswer, answered, syncIndex, session, sessionId, isMyTurn])
 
   const handlePrev = async () => {
-    if (currentIdx > 0) {
+    if (currentIdx > 0 && isMyTurn) {
       setAnswered(false)
       await syncIndex(currentIdx - 1)
     }
   }
 
   const handleNext = async () => {
-    if (currentIdx < totalQuestions - 1) {
+    if (currentIdx < totalQuestions - 1 && isMyTurn) {
       setAnswered(false)
       await syncIndex(currentIdx + 1)
     }
@@ -204,7 +221,7 @@ export function ActiveSession() {
           <div className="flex justify-between items-center mb-2">
             <button
               onClick={handlePrev}
-              disabled={currentIdx === 0}
+              disabled={currentIdx === 0 || !isMyTurn}
               className="flex items-center gap-1 text-on-surface-variant hover:text-on-surface disabled:opacity-30 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -232,7 +249,9 @@ export function ActiveSession() {
         <div className="flex-1 min-h-0 flex flex-col justify-center items-center py-4 my-2 text-center overflow-y-auto">
           <div className="inline-flex items-center gap-1.5 mb-4 px-3 py-1.5 bg-surface-container-low rounded-full shrink-0">
             <Clock className="w-3.5 h-3.5 text-on-surface-variant" />
-            <span className="text-[11px] font-medium text-on-surface-variant">Your turn</span>
+            <span className="text-[11px] font-medium text-on-surface-variant">
+              {isMyTurn ? 'Your turn' : "Partner's turn"}
+            </span>
           </div>
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-on-surface leading-snug px-2 break-words w-full">
             {questionText}
@@ -243,7 +262,7 @@ export function ActiveSession() {
         <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 shrink-0">
           <button
             onClick={() => handleAnswer('disagree')}
-            disabled={answered}
+            disabled={answered || !isMyTurn}
             className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-error-container/15 hover:border-error/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-error-container/30 flex items-center justify-center">
@@ -254,7 +273,7 @@ export function ActiveSession() {
 
           <button
             onClick={() => handleAnswer('neutral')}
-            disabled={answered}
+            disabled={answered || !isMyTurn}
             className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-surface-variant/50 hover:border-outline active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-surface-container-high flex items-center justify-center">
@@ -265,7 +284,7 @@ export function ActiveSession() {
 
           <button
             onClick={() => handleAnswer('agree')}
-            disabled={answered}
+            disabled={answered || !isMyTurn}
             className="flex flex-col items-center gap-2 py-4 sm:py-5 px-2 bg-surface border-2 border-outline-variant rounded-2xl hover:bg-secondary-container/15 hover:border-secondary/50 active:scale-[0.96] transition-all duration-200 disabled:opacity-50 min-h-[88px]"
           >
             <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-secondary-container/40 flex items-center justify-center">
@@ -279,7 +298,7 @@ export function ActiveSession() {
         <div className="flex gap-2 shrink-0">
           <button
             onClick={() => handleAnswer('skipped')}
-            disabled={answered}
+            disabled={answered || !isMyTurn}
             className="flex-1 py-3 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             <SkipForward className="w-4 h-4" />
@@ -287,7 +306,8 @@ export function ActiveSession() {
           </button>
           <button
             onClick={handleNext}
-            className="py-3 px-4 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all"
+            disabled={!isMyTurn}
+            className="py-3 px-4 flex items-center justify-center gap-2 text-on-surface-variant hover:text-on-surface text-sm font-medium rounded-2xl hover:bg-surface-variant/30 active:scale-[0.98] transition-all disabled:opacity-50"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

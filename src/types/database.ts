@@ -33,6 +33,8 @@ export interface Session {
   partner_id: string | null
   current_question_index: number
   partner_active: boolean
+  current_turn: 'host' | 'partner'
+  turn_selected: boolean
   created_at: string
   updated_at: string
 }
