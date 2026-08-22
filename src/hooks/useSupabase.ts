@@ -339,7 +339,7 @@ export async function joinSession(code: string, partnerId: string) {
 }
 
 export function getSessionInviteUrl(code: string): string {
-  const base = typeof window !== 'undefined' ? window.location.origin : 'https://aura-app.netlify.app'
+  const base = typeof window !== 'undefined' ? window.location.origin : 'https://athinas-app.netlify.app'
   return `${base}/session/join?code=${code}`
 }
 

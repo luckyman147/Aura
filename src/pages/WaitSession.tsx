@@ -75,7 +75,7 @@ export function WaitSession() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Join me on Aura',
+          title: 'Join me on Athinas',
           text: `Let's discover our compatibility! Use code ${code} or tap the link:`,
           url: inviteUrl,
         })

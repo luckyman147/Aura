@@ -114,7 +114,7 @@ export function Results() {
               {score >= 80 ? 'Perfect Match' : score >= 60 ? 'Strong Match' : score >= 40 ? 'Growing Together' : 'Room to Grow'}
             </h1>
             <p className="text-sm text-on-surface-variant text-center max-w-sm mt-2 leading-relaxed">
-              Your auras blend beautifully, suggesting a deep understanding and shared perspective.
+              Your energies blend beautifully, suggesting a deep understanding and shared perspective.
             </p>
           </section>
 
