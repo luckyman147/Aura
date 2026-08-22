@@ -23,9 +23,9 @@ export function Header({ showLogo = false, showHome = false }: HeaderProps) {
       )}
 
       {showLogo ? (
-        <img src="/logo.png" alt="SoulSync" className="h-9 w-auto" />
+        <img src="/logo.png" alt="Athinas" className="h-9 w-auto" />
       ) : (
-        <h1 className="text-2xl font-bold text-primary tracking-tight">SoulSync</h1>
+        <h1 className="text-2xl font-bold text-primary tracking-tight">Athinas</h1>
       )}
 
       <div className="w-10 h-10" />

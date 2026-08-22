@@ -33,10 +33,10 @@ export function Home() {
         <div className="text-center mb-10 w-full animate-float">
           <img
             src="/logo.png"
-            alt="SoulSync"
+            alt="Athinas"
             className="w-36 h-36 mx-auto mb-4 drop-shadow-lg"
           />
-          <h2 className="text-4xl font-bold text-on-surface mb-3 tracking-tight">SoulSync</h2>
+          <h2 className="text-4xl font-bold text-on-surface mb-3 tracking-tight">Athinas</h2>
           <p className="text-base text-on-surface-variant max-w-xs mx-auto leading-relaxed">
             Discover deeper connection through meaningful conversation.
           </p>
