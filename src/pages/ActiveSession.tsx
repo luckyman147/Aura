@@ -75,26 +75,18 @@ export function ActiveSession() {
   useEffect(() => {
     if (!sessionId) return
     const channel = supabase.channel(`session:${sessionId}`)
-    let partnerPresent = false
-    let ready = false
-
-    const readyTimeout = setTimeout(() => {
-      ready = true
-    }, 3000)
+    let previousOnline = 0
 
     channel
       .on('presence', { event: 'sync' }, () => {
-        if (!ready) return
         const state = channel.presenceState()
         const players = Object.keys(state)
         const online = players.length
 
-        if (partnerPresent && online < 2) {
+        if (previousOnline >= 2 && online < 2) {
           navigate('/')
         }
-      })
-      .on('presence', { event: 'join' }, () => {
-        partnerPresent = true
+        previousOnline = online
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -103,7 +95,6 @@ export function ActiveSession() {
       })
 
     return () => {
-      clearTimeout(readyTimeout)
       supabase.removeChannel(channel)
     }
   }, [sessionId, playerId])
