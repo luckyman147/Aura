@@ -76,9 +76,15 @@ export function ActiveSession() {
     if (!sessionId) return
     const channel = supabase.channel(`session:${sessionId}`)
     let partnerPresent = false
+    let ready = false
+
+    const readyTimeout = setTimeout(() => {
+      ready = true
+    }, 3000)
 
     channel
       .on('presence', { event: 'sync' }, () => {
+        if (!ready) return
         const state = channel.presenceState()
         const players = Object.keys(state)
         const online = players.length
@@ -97,6 +103,7 @@ export function ActiveSession() {
       })
 
     return () => {
+      clearTimeout(readyTimeout)
       supabase.removeChannel(channel)
     }
   }, [sessionId, playerId])
